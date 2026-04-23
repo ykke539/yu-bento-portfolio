@@ -32,17 +32,18 @@ export default function Nav() {
         borderBottom: scrolled ? '1px solid var(--color-border)' : '1px solid transparent',
       }}
     >
-      <Link href="/" className="flex items-center no-underline">
+      {/* ロゴ画像：白余白を負のマージンでトリミング */}
+      <Link href="/" className="flex items-center no-underline overflow-hidden" style={{ height: '48px' }}>
         <Image
           src="/logo.png"
           alt="優.bento"
-          width={200}
-          height={200}
-          className="object-contain"
+          width={1000}
+          height={1000}
           style={{
-            height: '52px',
+            height: '160px',
             width: 'auto',
-            // 白背景ロゴを周囲と馴染ませる
+            marginTop: '-48px',
+            marginBottom: '-64px',
             mixBlendMode: 'multiply',
           }}
           priority

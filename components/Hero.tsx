@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import Image from 'next/image'
 import gsap from 'gsap'
 
 // 装飾ドット定義（位置・サイズ・透明度をランダム感で配置）
@@ -186,32 +185,21 @@ export default function Hero() {
         />
       ))}
 
-      {/* ウォーターマーク（ロゴ画像） */}
+      {/* ウォーターマーク（抜き文字） */}
       <div
         ref={watermarkRef}
         aria-hidden="true"
-        className="absolute select-none pointer-events-none"
+        className="absolute right-[-4vw] top-1/2 -translate-y-1/2 select-none pointer-events-none leading-none whitespace-nowrap"
         style={{
-          right: '-6vw',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          width: 'clamp(320px, 42vw, 660px)',
+          fontFamily: 'var(--font-shippori)',
+          fontSize: 'clamp(280px, 35vw, 560px)',
+          fontWeight: 600,
+          color: 'transparent',
+          WebkitTextStroke: '1px var(--color-border)',
           opacity: 0,
         }}
       >
-        <Image
-          src="/logo.png"
-          alt=""
-          width={1000}
-          height={1000}
-          style={{
-            width: '100%',
-            height: 'auto',
-            mixBlendMode: 'multiply',
-            filter: 'contrast(0.18) brightness(1.1)',
-          }}
-          priority
-        />
+        優
       </div>
 
       <div className="relative z-10 max-w-[900px]">
