@@ -1,7 +1,20 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import Image from 'next/image'
 import gsap from 'gsap'
+
+// 装飾ドット定義（位置・サイズ・透明度をランダム感で配置）
+const DOTS = [
+  { top: '18%',  left: '7%',   size: 5,  opacity: 0.55 },
+  { top: '72%',  left: '5%',   size: 3,  opacity: 0.35 },
+  { top: '42%',  left: '3%',   size: 7,  opacity: 0.25 },
+  { top: '88%',  left: '22%',  size: 4,  opacity: 0.45 },
+  { top: '12%',  right: '28%', size: 6,  opacity: 0.30 },
+  { top: '55%',  right: '8%',  size: 4,  opacity: 0.40 },
+  { top: '82%',  right: '12%', size: 8,  opacity: 0.20 },
+  { top: '30%',  right: '5%',  size: 3,  opacity: 0.50 },
+]
 
 const TITLE_LINE1 = 'Build Quietly.'
 const TITLE_LINE2 = 'Design Deeply.'
@@ -155,20 +168,50 @@ export default function Hero() {
         style={{ background: 'var(--color-bg)' }}
       />
 
-      {/* 透かし文字 */}
+      {/* 装飾ドット */}
+      {DOTS.map((dot, i) => (
+        <span
+          key={i}
+          aria-hidden="true"
+          className="absolute rounded-full pointer-events-none select-none"
+          style={{
+            top: dot.top,
+            left: 'left' in dot ? (dot as any).left : undefined,
+            right: 'right' in dot ? (dot as any).right : undefined,
+            width: dot.size,
+            height: dot.size,
+            background: 'var(--color-taupe)',
+            opacity: dot.opacity,
+          }}
+        />
+      ))}
+
+      {/* ウォーターマーク（ロゴ画像） */}
       <div
         ref={watermarkRef}
         aria-hidden="true"
-        className="absolute right-[-4vw] top-1/2 -translate-y-1/2 select-none pointer-events-none leading-none whitespace-nowrap"
+        className="absolute select-none pointer-events-none"
         style={{
-          fontFamily: 'var(--font-shippori)',
-          fontSize: 'clamp(280px, 35vw, 560px)',
-          fontWeight: 600,
-          color: 'transparent',
-          WebkitTextStroke: '1px var(--color-border)',
+          right: '-6vw',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          width: 'clamp(320px, 42vw, 660px)',
+          opacity: 0,
         }}
       >
-        優
+        <Image
+          src="/logo.png"
+          alt=""
+          width={1000}
+          height={1000}
+          style={{
+            width: '100%',
+            height: 'auto',
+            mixBlendMode: 'multiply',
+            filter: 'contrast(0.18) brightness(1.1)',
+          }}
+          priority
+        />
       </div>
 
       <div className="relative z-10 max-w-[900px]">
