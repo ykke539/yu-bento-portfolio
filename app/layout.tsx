@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
 import { DM_Mono, DM_Sans, Shippori_Mincho } from 'next/font/google'
 import './globals.css'
-import Nav from '@/components/Nav'
-import Cursor from '@/components/Cursor'
+import PortfolioShell from '@/components/PortfolioShell'
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -37,23 +36,17 @@ export const metadata: Metadata = {
   },
 }
 
-// iOS の input フォーカス時の自動ズームを防ぐ
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja" className={`${dmSans.variable} ${dmMono.variable} ${shippori.variable}`}>
       <body>
-        <Cursor />
-        <Nav />
+        <PortfolioShell />
         {children}
       </body>
     </html>

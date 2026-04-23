@@ -4,7 +4,6 @@ import { COOKIE_NAME } from '@/lib/auth'
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
-  // ログインページはスルー
   if (pathname === '/admin/login') return NextResponse.next()
 
   const token = req.cookies.get(COOKIE_NAME)?.value
