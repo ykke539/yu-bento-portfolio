@@ -7,7 +7,8 @@
   --color-ink: #111110;
   --color-taupe: #8c8279;
   --color-border: #e0dcd7;
-  --color-muted: #b5b0aa;
+  --color-muted: #9a9590;       /* 旧 #b5b0aa より濃く */
+  --color-accent: #8B2E2E;      /* 深みのある赤 */
 }
 
 *, *::before, *::after {
@@ -16,9 +17,7 @@
   padding: 0;
 }
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
   background: var(--color-bg);
@@ -31,10 +30,11 @@ body {
   overflow-x: hidden;
 }
 
+/* カーソル */
 .cursor-dot {
   width: 7px;
   height: 7px;
-  background: var(--color-taupe);
+  background: var(--color-accent);
   border-radius: 50%;
   position: fixed;
   pointer-events: none;
@@ -54,6 +54,29 @@ body {
   transition: width 0.3s, height 0.3s, border-color 0.3s;
 }
 
+/* Navリンクホバー */
+.nav-link {
+  position: relative;
+  transition: color 0.2s;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--color-accent);
+  transition: width 0.25s ease;
+}
+.nav-link:hover {
+  color: var(--color-accent) !important;
+}
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* スクロールバー */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--color-bg); }
 ::-webkit-scrollbar-thumb { background: var(--color-border); }

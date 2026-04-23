@@ -60,14 +60,32 @@ export default function Contact() {
           </SectionReveal>
           <SectionReveal delay={0.1}>
             <p className="text-sm leading-[1.9] mb-8" style={{ color: 'var(--color-muted)' }}>設計できる人を探しているなら、<br />それはここです。</p>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col" style={{ borderTop: '1px solid var(--color-border)' }}>
               {SNS.map(({ label, href }) => (
-                <a key={label} href={href} target="_blank" rel="noopener noreferrer"
-                  className="no-underline flex items-center gap-3 text-[11px] tracking-[0.08em] transition-colors duration-200 hover:text-[var(--color-ink)]"
-                  style={{ fontFamily: 'var(--font-dm-mono)', color: 'var(--color-muted)' }}
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="no-underline flex items-center justify-between py-3 px-0 text-[11px] tracking-[0.1em] uppercase transition-all duration-200 group"
+                  style={{
+                    fontFamily: 'var(--font-dm-mono)',
+                    color: 'var(--color-muted)',
+                    borderBottom: '1px solid var(--color-border)',
+                  }}
+                  onMouseEnter={e => {
+                    const el = e.currentTarget as HTMLElement
+                    el.style.color = 'var(--color-accent)'
+                    el.style.paddingLeft = '8px'
+                  }}
+                  onMouseLeave={e => {
+                    const el = e.currentTarget as HTMLElement
+                    el.style.color = 'var(--color-muted)'
+                    el.style.paddingLeft = '0'
+                  }}
                 >
-                  <span className="w-4 h-px flex-shrink-0" style={{ background: 'var(--color-border)' }} />
                   {label}
+                  <span style={{ fontSize: '10px', opacity: 0.6 }}>↗</span>
                 </a>
               ))}
             </div>

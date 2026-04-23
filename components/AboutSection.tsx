@@ -27,10 +27,26 @@ export default function AboutSection() {
           </div>
           <Link
             href="/about"
-            className="inline-block mt-8 no-underline text-[11px] tracking-[0.12em] uppercase transition-colors duration-200"
-            style={{ fontFamily: 'var(--font-dm-mono)', color: 'var(--color-taupe)' }}
+            className="inline-flex items-center gap-2 mt-8 no-underline text-[11px] tracking-[0.12em] uppercase transition-all duration-250 group"
+            style={{
+              fontFamily: 'var(--font-dm-mono)',
+              color: 'var(--color-ink)',
+              border: '1px solid var(--color-border)',
+              padding: '12px 20px',
+            }}
+            onMouseEnter={e => {
+              const el = e.currentTarget as HTMLElement
+              el.style.borderColor = 'var(--color-accent)'
+              el.style.color = 'var(--color-accent)'
+            }}
+            onMouseLeave={e => {
+              const el = e.currentTarget as HTMLElement
+              el.style.borderColor = 'var(--color-border)'
+              el.style.color = 'var(--color-ink)'
+            }}
           >
-            Read more →
+            プロフィールを読む
+            <span className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
           </Link>
         </SectionReveal>
         <SectionReveal delay={0.15}>

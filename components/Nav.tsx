@@ -49,6 +49,7 @@ export default function Nav() {
             <li key={href}>
               <Link
                 href={href}
+                className="nav-link"
                 style={{
                   fontFamily: 'var(--font-dm-mono)',
                   fontSize: '11px',
@@ -56,7 +57,6 @@ export default function Nav() {
                   textTransform: 'uppercase',
                   textDecoration: 'none',
                   color: pathname === href.split('#')[0] && !href.includes('#') ? 'var(--color-ink)' : 'var(--color-muted)',
-                  transition: 'color 0.2s',
                 }}
               >
                 {label}
