@@ -77,7 +77,7 @@ export default function AdminPage() {
     title: { fontSize: '20px', fontWeight: 600, color: '#111110', marginBottom: '4px' },
     subtitle: { fontSize: '13px', color: '#78716c', marginBottom: '28px' },
     card: { background: '#fff', borderRadius: '8px', border: '1px solid #e7e5e4', overflow: 'hidden' },
-    row: { padding: '20px 24px', borderBottom: '1px solid #f5f5f4', display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '16px', alignItems: 'center' },
+    row: { padding: '16px 20px', borderBottom: '1px solid #f5f5f4' },
     clientName: { fontSize: '15px', fontWeight: 500, color: '#111110', marginBottom: '4px' },
     slug: { fontSize: '12px', color: '#a8a29e', fontFamily: 'monospace' },
     copyBtn: { padding: '7px 14px', border: '1px solid #e7e5e4', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', background: '#fff', whiteSpace: 'nowrap' as const },
@@ -118,26 +118,30 @@ export default function AdminPage() {
           ) : (
             proposals.map(p => (
               <div key={p.id} style={s.row}>
-                <div>
+                {/* 上段：名前 + バッジ */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
                   <div style={s.clientName}>{p.clientName || '（名前なし）'}</div>
-                  <div style={s.slug}>
+                  <span style={badge(p.status)}>{STATUS_LABEL[p.status]?.label ?? p.status}</span>
+                </div>
+                {/* 下段：slug + ボタン群 */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <span style={{ ...s.slug, flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {p.order !== 999 && <span style={{ marginRight: '8px', color: '#d6d3d1' }}>#{p.order}</span>}
                     /proposal/{p.slug}
-                  </div>
+                  </span>
+                  <button
+                    onClick={() => copyUrl(p.slug)}
+                    style={{ ...s.copyBtn, background: copied === p.slug ? '#f0fdf4' : '#fff', color: copied === p.slug ? '#166534' : '#44403c', flexShrink: 0 }}
+                  >
+                    {copied === p.slug ? '✓ コピー' : 'URLコピー'}
+                  </button>
+                  <Link
+                    href={`/admin/proposals/${p.id}`}
+                    style={{ ...s.copyBtn, textDecoration: 'none', color: '#fff', background: '#111110', border: '1px solid #111110', flexShrink: 0 } as React.CSSProperties}
+                  >
+                    編集
+                  </Link>
                 </div>
-                <span style={badge(p.status)}>{STATUS_LABEL[p.status]?.label ?? p.status}</span>
-                <button
-                  onClick={() => copyUrl(p.slug)}
-                  style={{ ...s.copyBtn, background: copied === p.slug ? '#f0fdf4' : '#fff', color: copied === p.slug ? '#166534' : '#44403c' }}
-                >
-                  {copied === p.slug ? '✓ コピー済み' : 'URLをコピー'}
-                </button>
-                <Link
-                  href={`/admin/proposals/${p.id}`}
-                  style={{ ...s.copyBtn, textDecoration: 'none', color: '#44403c' } as React.CSSProperties}
-                >
-                  編集
-                </Link>
               </div>
             ))
           )}
