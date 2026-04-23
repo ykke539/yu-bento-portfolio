@@ -1,6 +1,6 @@
-@import "tailwindcss";
-@source "../app/**/*.{ts,tsx}";
-@source "../components/**/*.{ts,tsx}";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --color-bg: #f9f8f6;
@@ -31,7 +31,6 @@ body {
   overflow-x: hidden;
 }
 
-/* カーソル */
 .cursor-dot {
   width: 6px;
   height: 6px;
@@ -55,7 +54,6 @@ body {
   transition: width 0.3s, height 0.3s, border-color 0.3s;
 }
 
-/* スクロールバー */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--color-bg); }
 ::-webkit-scrollbar-thumb { background: var(--color-border); }
