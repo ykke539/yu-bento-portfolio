@@ -109,7 +109,7 @@ export default function Hero() {
         <span
           key={i}
           aria-hidden="true"
-          className="absolute rounded-full pointer-events-none select-none hidden md:block"
+          className="absolute rounded-full pointer-events-none select-none"
           style={{
             top: dot.top,
             left: 'left' in dot ? (dot as any).left : undefined,
@@ -126,12 +126,12 @@ export default function Hero() {
       <div
         ref={watermarkRef}
         aria-hidden="true"
-        className="absolute select-none pointer-events-none hidden md:block"
+        className="absolute select-none pointer-events-none"
         style={{
-          right: '-3vw',
+          right: 'clamp(-60px, -3vw, -20px)',
           top: '50%',
           transform: 'translateY(-50%)',
-          width: 'clamp(300px, 38vw, 580px)',
+          width: 'clamp(180px, 55vw, 580px)',
           opacity: 0,
         }}
       >
