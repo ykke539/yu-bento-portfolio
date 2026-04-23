@@ -17,11 +17,18 @@ export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', subject: SUBJECTS[0], message: '' })
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
 
+  const isValid = form.name.trim() !== '' && form.email.trim() !== '' && form.message.trim() !== ''
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!isValid) return
     setStatus('sending')
     try {
-      const res = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
       setStatus(res.ok ? 'sent' : 'error')
     } catch { setStatus('error') }
   }
@@ -30,20 +37,24 @@ export default function Contact() {
     width: '100%', background: 'transparent', border: 'none',
     borderBottom: '1px solid var(--color-border)', padding: '12px 0',
     fontFamily: 'var(--font-dm-sans)', fontSize: '14px',
-    color: 'var(--color-ink)', outline: 'none', transition: 'border-color 0.2s',
+    color: 'var(--color-ink)', outline: 'none',
   }
-  const labelStyle: React.CSSProperties = {
-    display: 'block', fontFamily: 'var(--font-dm-mono)', fontSize: '10px',
-    color: 'var(--color-muted)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px',
-  }
+
+  const RequiredLabel = ({ text }: { text: string }) => (
+    <label style={{ display: 'block', fontFamily: 'var(--font-dm-mono)', fontSize: '10px', color: 'var(--color-muted)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>
+      {text}
+      <span style={{ color: 'var(--color-taupe)', marginLeft: '4px' }}>*</span>
+    </label>
+  )
 
   return (
     <section id="contact" className="py-20 md:py-36 px-6 md:px-14 max-w-[1200px] mx-auto" style={{ borderTop: '1px solid var(--color-border)' }}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-20 items-start">
+        {/* 左：見出し + SNS */}
         <div>
           <SectionReveal>
             <h2 className="leading-none mb-10 md:mb-12" style={{ fontFamily: 'var(--font-shippori)', fontSize: 'clamp(48px, 8vw, 120px)', fontWeight: 400, color: 'var(--color-ink)' }}>
-              <span className="block mb-4 md:mb-6" style={{ fontFamily: 'var(--font-dm-mono)', fontSize: '13px', color: 'var(--color-taupe)', letterSpacing: '0.1em' }}>Contact</span>
+              <span className="block mb-4" style={{ fontFamily: 'var(--font-dm-mono)', fontSize: '13px', color: 'var(--color-taupe)', letterSpacing: '0.1em' }}>Contact</span>
               話しましょう
             </h2>
           </SectionReveal>
@@ -52,10 +63,10 @@ export default function Contact() {
             <div className="flex flex-col gap-3">
               {SNS.map(({ label, href }) => (
                 <a key={label} href={href} target="_blank" rel="noopener noreferrer"
-                  className="no-underline flex items-center gap-3 text-[11px] tracking-[0.08em] transition-colors duration-200"
+                  className="no-underline flex items-center gap-3 text-[11px] tracking-[0.08em] transition-colors duration-200 hover:text-[var(--color-ink)]"
                   style={{ fontFamily: 'var(--font-dm-mono)', color: 'var(--color-muted)' }}
                 >
-                  <span className="w-4 h-px" style={{ background: 'var(--color-border)', flexShrink: 0 }} />
+                  <span className="w-4 h-px flex-shrink-0" style={{ background: 'var(--color-border)' }} />
                   {label}
                 </a>
               ))}
@@ -63,6 +74,7 @@ export default function Contact() {
           </SectionReveal>
         </div>
 
+        {/* 右：フォーム */}
         <SectionReveal delay={0.15}>
           {status === 'sent' ? (
             <div className="py-16 text-center" style={{ fontFamily: 'var(--font-shippori)', fontSize: '18px', color: 'var(--color-taupe)' }}>
@@ -70,21 +82,55 @@ export default function Contact() {
               <span className="text-[13px]" style={{ color: 'var(--color-muted)' }}>ありがとうございます。折り返しご連絡します。</span>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-8">
-              <div><label style={labelStyle}>お名前</label><input type="text" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} style={inputStyle} placeholder="山田 太郎" /></div>
-              <div><label style={labelStyle}>メールアドレス</label><input type="email" required value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} style={inputStyle} placeholder="you@example.com" /></div>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-7" noValidate>
+              {/* 全項目必須の注記 */}
+              <p className="text-[11px] tracking-wider" style={{ fontFamily: 'var(--font-dm-mono)', color: 'var(--color-muted)' }}>
+                <span style={{ color: 'var(--color-taupe)' }}>*</span> すべて必須項目です
+              </p>
+
               <div>
-                <label style={labelStyle}>件名</label>
+                <RequiredLabel text="お名前" />
+                <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} style={inputStyle} placeholder="山田 太郎" />
+              </div>
+              <div>
+                <RequiredLabel text="メールアドレス" />
+                <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} style={inputStyle} placeholder="you@example.com" />
+              </div>
+              <div>
+                <RequiredLabel text="件名" />
                 <select value={form.subject} onChange={e => setForm({ ...form, subject: e.target.value })} style={{ ...inputStyle, cursor: 'pointer' }}>
                   {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
-              <div><label style={labelStyle}>メッセージ</label><textarea required rows={5} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} style={{ ...inputStyle, resize: 'none', lineHeight: '1.8' }} placeholder="ご依頼・ご質問などお気軽にどうぞ" /></div>
-              <button type="submit" disabled={status === 'sending'} className="self-start transition-all duration-250 disabled:opacity-50"
-                style={{ fontFamily: 'var(--font-dm-mono)', fontSize: '12px', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--color-bg)', background: 'var(--color-ink)', border: '1px solid var(--color-ink)', padding: '16px 36px', cursor: 'pointer' }}>
+              <div>
+                <RequiredLabel text="メッセージ" />
+                <textarea value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} rows={5} style={{ ...inputStyle, resize: 'none', lineHeight: '1.8' }} placeholder="ご依頼・ご質問などお気軽にどうぞ" />
+              </div>
+
+              <button
+                type="submit"
+                disabled={!isValid || status === 'sending'}
+                className="self-start transition-all duration-300"
+                style={{
+                  fontFamily: 'var(--font-dm-mono)',
+                  fontSize: '12px',
+                  letterSpacing: '0.15em',
+                  textTransform: 'uppercase',
+                  padding: '16px 36px',
+                  cursor: isValid ? 'pointer' : 'not-allowed',
+                  // 未入力時はグレーアウト
+                  background: isValid ? 'var(--color-ink)' : 'var(--color-border)',
+                  color: isValid ? 'var(--color-bg)' : 'var(--color-muted)',
+                  border: 'none',
+                  opacity: status === 'sending' ? 0.6 : 1,
+                }}
+              >
                 {status === 'sending' ? 'Sending...' : 'Send Message →'}
               </button>
-              {status === 'error' && <p className="text-[12px]" style={{ color: '#c0392b' }}>送信に失敗しました。時間をおいて再度お試しください。</p>}
+
+              {status === 'error' && (
+                <p className="text-[12px]" style={{ color: '#c0392b' }}>送信に失敗しました。時間をおいて再度お試しください。</p>
+              )}
             </form>
           )}
         </SectionReveal>

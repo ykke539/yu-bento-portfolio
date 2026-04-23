@@ -131,8 +131,8 @@ export default function AboutPage() {
       </div>
 
       {/* STORY */}
-      <div className="max-w-[1200px] mx-auto px-14">
-        <div className="py-28" style={{ borderTop: '1px solid var(--color-border)' }}>
+      <div className="max-w-[1200px] mx-auto px-6 md:px-14">
+        <div className="py-16 md:py-28" style={{ borderTop: '1px solid var(--color-border)' }}>
           <div className="flex items-center gap-5 mb-16">
             <span style={{ ...monoStyle, fontSize: '11px', color: 'var(--color-taupe)', letterSpacing: '0.1em' }}>01</span>
             <span className="flex-1 h-px" style={{ background: 'var(--color-border)' }} />
@@ -172,8 +172,8 @@ export default function AboutPage() {
       </div>
 
       {/* SKILLS */}
-      <div className="max-w-[1200px] mx-auto px-14">
-        <div className="py-28" style={{ borderTop: '1px solid var(--color-border)' }}>
+      <div className="max-w-[1200px] mx-auto px-6 md:px-14">
+        <div className="py-16 md:py-28" style={{ borderTop: '1px solid var(--color-border)' }}>
           <div className="flex items-center gap-5 mb-16">
             <span style={{ ...monoStyle, fontSize: '11px', color: 'var(--color-taupe)', letterSpacing: '0.1em' }}>02</span>
             <span className="flex-1 h-px" style={{ background: 'var(--color-border)' }} />
@@ -183,13 +183,8 @@ export default function AboutPage() {
             {skills.map((group, gi) => (
               <div
                 key={group.group}
-                className="py-10"
-                style={{
-                  paddingRight: gi !== 2 ? '40px' : 0,
-                  paddingLeft: gi !== 0 ? '40px' : 0,
-                  borderTop: '1px solid var(--color-border)',
-                  borderLeft: gi !== 0 ? '1px solid var(--color-border)' : undefined,
-                }}
+                className={['py-10 border-t', gi === 1 ? 'md:px-10 md:border-l' : '', gi === 2 ? 'md:pl-10 md:border-l' : ''].join(' ')}
+                style={{ borderColor: 'var(--color-border)' }}
               >
                 <div className="mb-6 text-[10px] tracking-[0.15em] uppercase" style={{ ...monoStyle, color: 'var(--color-taupe)' }}>
                   {group.group}
@@ -215,7 +210,7 @@ export default function AboutPage() {
 
       {/* footer nav */}
       <div
-        className="max-w-[1200px] mx-auto px-14 py-20 flex justify-between items-center"
+        className="max-w-[1200px] mx-auto px-6 md:px-14 py-12 md:py-20 flex justify-between items-center"
         style={{ borderTop: '1px solid var(--color-border)' }}
       >
         <a href="/works" style={{ ...monoStyle, fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-muted)', textDecoration: 'none' }}>← Works</a>

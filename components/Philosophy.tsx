@@ -16,13 +16,12 @@ export default function Philosophy() {
         {items.map((item, i) => (
           <SectionReveal key={i} delay={i * 0.1}>
             <div
-              className="py-10 md:py-12"
-              style={{
-                paddingRight: i % 2 === 0 ? 'clamp(0px, 4vw, 64px)' : 0,
-                paddingLeft: i % 2 === 1 ? 'clamp(0px, 4vw, 64px)' : 0,
-                borderTop: '1px solid var(--color-border)',
-                borderRight: i % 2 === 0 ? '1px solid var(--color-border)' : undefined,
-              }}
+              className={[
+                'py-10 md:py-12 border-t',
+                // モバイルは右ボーダーなし・パディングなし、デスクトップのみ適用
+                i % 2 === 0 ? 'md:pr-16 md:border-r' : 'md:pl-16',
+              ].join(' ')}
+              style={{ borderColor: 'var(--color-border)' }}
             >
               <div className="mb-5 text-sm tracking-[0.05em]" style={{ fontFamily: 'var(--font-shippori)', color: 'var(--color-taupe)' }}>{item.q}</div>
               <div className="leading-[1.5] mb-5" style={{ fontFamily: 'var(--font-shippori)', fontSize: 'clamp(20px, 3vw, 34px)', fontWeight: 500, color: 'var(--color-ink)' }}>{item.a}</div>

@@ -91,7 +91,7 @@ export default function WorksPage() {
     <main>
       {/* PAGE HEADER */}
       <div
-        className="px-14 pt-40 pb-20 max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 items-end"
+        className="px-6 md:px-14 pt-32 md:pt-40 pb-12 md:pb-20 max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20 items-end"
         style={{ borderBottom: '1px solid var(--color-border)' }}
       >
         <div>
@@ -114,7 +114,7 @@ export default function WorksPage() {
 
       {/* INDEX */}
       <div
-        className="max-w-[1200px] mx-auto px-14 flex"
+        className="max-w-[1200px] mx-auto px-6 md:px-14 hidden md:flex"
         style={{ borderBottom: '1px solid var(--color-border)' }}
       >
         {works.map((w, i) => (
@@ -143,7 +143,7 @@ export default function WorksPage() {
         <div
           key={work.id}
           id={work.id}
-          className="max-w-[1200px] mx-auto px-14 py-24"
+          className="max-w-[1200px] mx-auto px-6 md:px-14 py-14 md:py-24"
           style={{ borderBottom: '1px solid var(--color-border)' }}
         >
           {/* meta */}
@@ -225,13 +225,8 @@ export default function WorksPage() {
               {work.thinking.map((t, i) => (
                 <div
                   key={i}
-                  className="py-10"
-                  style={{
-                    paddingRight: i % 2 === 0 ? '40px' : 0,
-                    paddingLeft: i % 2 === 1 ? '40px' : 0,
-                    borderTop: '1px solid var(--color-border)',
-                    borderLeft: i % 2 === 1 ? '1px solid var(--color-border)' : undefined,
-                  }}
+                  className={['py-10 border-t', i % 2 === 0 ? 'md:pr-10' : 'md:pl-10 md:border-l'].join(' ')}
+                  style={{ borderColor: 'var(--color-border)' }}
                 >
                   <div
                     className="mb-4 text-[10px] tracking-[0.12em] uppercase"
@@ -257,7 +252,7 @@ export default function WorksPage() {
 
       {/* footer nav */}
       <div
-        className="max-w-[1200px] mx-auto px-14 py-20 flex justify-between items-center"
+        className="max-w-[1200px] mx-auto px-6 md:px-14 py-12 md:py-20 flex justify-between items-center"
       >
         <a href="/" style={{ ...monoStyle, fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-muted)', textDecoration: 'none' }}>← Home</a>
         <a href="/about" style={{ ...monoStyle, fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-muted)', textDecoration: 'none' }}>About →</a>
