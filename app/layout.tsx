@@ -37,6 +37,13 @@ export const metadata: Metadata = {
   },
 }
 
+// iOS の input フォーカス時の自動ズームを防ぐ
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+}
+
 export default function RootLayout({
   children,
 }: {

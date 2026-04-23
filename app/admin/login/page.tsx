@@ -47,7 +47,7 @@ function LoginForm() {
             onChange={e => setPassword(e.target.value)}
             autoFocus
             required
-            style={{ width: '100%', padding: '10px 12px', border: '1px solid #e7e5e4', borderRadius: '6px', fontSize: '14px', outline: 'none', marginBottom: '16px', boxSizing: 'border-box' }}
+            style={{ width: '100%', padding: '10px 12px', border: '1px solid #e7e5e4', borderRadius: '6px', fontSize: '16px', outline: 'none', marginBottom: '16px', boxSizing: 'border-box' }}
           />
           {error && (
             <div style={{ fontSize: '13px', color: '#dc2626', marginBottom: '12px' }}>{error}</div>
