@@ -122,13 +122,63 @@ export default function EditProposalPage() {
           </div>
 
           <div>
-            <label style={s.label}>表示する実績</label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {WORKS.map(w => (
-                <label key={w.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 14px', border: `1px solid ${form.selectedWorks.includes(w.id) ? '#86efac' : '#e7e5e4'}`, borderRadius: '6px', cursor: 'pointer', fontSize: '14px', background: form.selectedWorks.includes(w.id) ? '#f0fdf4' : '#fff', color: '#44403c' }}>
-                  <input type="checkbox" checked={form.selectedWorks.includes(w.id)} onChange={() => toggleWork(w.id)} style={{ width: '16px', height: '16px', cursor: 'pointer' }} />
-                  {w.label}
-                </label>
+            <label style={s.label}>表示する実績（上から順に表示）</label>
+
+            {/* 選択済み：並び替え可能 */}
+            {form.selectedWorks.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
+                {form.selectedWorks.map((wid, idx) => {
+                  const work = WORKS.find(w => w.id === wid)
+                  if (!work) return null
+                  return (
+                    <div key={wid} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', border: '1px solid #86efac', borderRadius: '6px', background: '#f0fdf4', fontSize: '14px', color: '#44403c' }}>
+                      {/* 並び替えボタン */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0 }}>
+                        <button
+                          type="button"
+                          disabled={idx === 0}
+                          onClick={() => {
+                            const arr = [...form.selectedWorks]
+                            ;[arr[idx - 1], arr[idx]] = [arr[idx], arr[idx - 1]]
+                            setForm(f => ({ ...f, selectedWorks: arr }))
+                          }}
+                          style={{ padding: '1px 6px', fontSize: '11px', border: '1px solid #d1d5db', borderRadius: '3px', background: '#fff', cursor: idx === 0 ? 'not-allowed' : 'pointer', opacity: idx === 0 ? 0.3 : 1 }}
+                        >↑</button>
+                        <button
+                          type="button"
+                          disabled={idx === form.selectedWorks.length - 1}
+                          onClick={() => {
+                            const arr = [...form.selectedWorks]
+                            ;[arr[idx], arr[idx + 1]] = [arr[idx + 1], arr[idx]]
+                            setForm(f => ({ ...f, selectedWorks: arr }))
+                          }}
+                          style={{ padding: '1px 6px', fontSize: '11px', border: '1px solid #d1d5db', borderRadius: '3px', background: '#fff', cursor: idx === form.selectedWorks.length - 1 ? 'not-allowed' : 'pointer', opacity: idx === form.selectedWorks.length - 1 ? 0.3 : 1 }}
+                        >↓</button>
+                      </div>
+                      <span style={{ flex: 1 }}>{work.label}</span>
+                      {/* 削除ボタン */}
+                      <button
+                        type="button"
+                        onClick={() => setForm(f => ({ ...f, selectedWorks: f.selectedWorks.filter(w => w !== wid) }))}
+                        style={{ padding: '2px 8px', fontSize: '12px', border: '1px solid #fca5a5', borderRadius: '4px', background: '#fff', color: '#dc2626', cursor: 'pointer' }}
+                      >✕</button>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
+            {/* 未選択：追加ボタン */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {WORKS.filter(w => !form.selectedWorks.includes(w.id)).map(w => (
+                <button
+                  key={w.id}
+                  type="button"
+                  onClick={() => setForm(f => ({ ...f, selectedWorks: [...f.selectedWorks, w.id] }))}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', border: '1px dashed #e7e5e4', borderRadius: '6px', background: '#fff', fontSize: '14px', color: '#a8a29e', cursor: 'pointer', textAlign: 'left' }}
+                >
+                  <span style={{ fontSize: '16px', color: '#d1d5db' }}>+</span> {w.label}
+                </button>
               ))}
             </div>
           </div>
