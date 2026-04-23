@@ -14,15 +14,27 @@ const STATUS_LABEL: Record<string, { label: string; color: string; bg: string }>
 export default function AdminPage() {
   const [proposals, setProposals] = useState<Proposal[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState<string | null>(null)
   const router = useRouter()
 
   const fetchProposals = useCallback(async () => {
-    const res = await fetch('/api/admin/proposals')
-    if (res.status === 401) { router.push('/admin/login'); return }
-    const data = await res.json()
-    setProposals(data)
-    setLoading(false)
+    try {
+      const res = await fetch('/api/admin/proposals')
+      if (res.status === 401) { router.push('/admin/login'); return }
+      if (!res.ok) {
+        const body = await res.text()
+        setError(`APIエラー (${res.status}): ${body}`)
+        setLoading(false)
+        return
+      }
+      const data = await res.json()
+      setProposals(data)
+    } catch (e: any) {
+      setError(`通信エラー: ${e.message}`)
+    } finally {
+      setLoading(false)
+    }
   }, [router])
 
   useEffect(() => { fetchProposals() }, [fetchProposals])
@@ -90,6 +102,14 @@ export default function AdminPage() {
         <div style={s.card}>
           {loading ? (
             <div style={s.empty}>読み込み中...</div>
+          ) : error ? (
+            <div style={{ padding: '32px 24px' }}>
+              <div style={{ fontSize: '14px', fontWeight: 600, color: '#dc2626', marginBottom: '8px' }}>エラーが発生しました</div>
+              <pre style={{ fontSize: '12px', color: '#78716c', whiteSpace: 'pre-wrap', wordBreak: 'break-all', background: '#fef2f2', padding: '12px', borderRadius: '6px' }}>{error}</pre>
+              <button onClick={fetchProposals} style={{ marginTop: '16px', padding: '8px 16px', border: '1px solid #e7e5e4', borderRadius: '6px', fontSize: '13px', cursor: 'pointer', background: '#fff' }}>
+                再試行
+              </button>
+            </div>
           ) : proposals.length === 0 ? (
             <div style={s.empty}>
               提案ページがまだありません。<br />

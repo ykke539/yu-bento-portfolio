@@ -8,8 +8,16 @@ function isAuthed(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   if (!isAuthed(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  const proposals = await getAllProposals()
-  return NextResponse.json(proposals)
+  try {
+    const proposals = await getAllProposals()
+    return NextResponse.json(proposals)
+  } catch (e: any) {
+    console.error('[admin/proposals GET]', e)
+    return NextResponse.json(
+      { error: e.message ?? 'Notion API error' },
+      { status: 500 }
+    )
+  }
 }
 
 export async function POST(req: NextRequest) {
