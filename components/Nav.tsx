@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -40,15 +39,8 @@ export default function Nav() {
           borderBottom: scrolled ? '1px solid var(--color-border)' : '1px solid transparent',
         }}
       >
-        <Link href="/" className="flex items-center no-underline overflow-hidden" style={{ height: '48px' }} onClick={() => setOpen(false)}>
-          <Image
-            src="/logo.png"
-            alt="優.bento"
-            width={1000}
-            height={1000}
-            style={{ height: '160px', width: 'auto', marginTop: '-48px', marginBottom: '-64px', mixBlendMode: 'multiply' }}
-            priority
-          />
+        <Link href="/" className="flex items-center no-underline" onClick={() => setOpen(false)}>
+          <img src="/logo-horizontal.svg" alt="優.bento" style={{ height: '36px', width: 'auto' }} />
         </Link>
 
         {/* デスクトップメニュー */}
