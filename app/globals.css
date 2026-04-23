@@ -1,14 +1,11 @@
 @import "tailwindcss";
 
-@theme inline {
+:root {
   --color-bg: #f9f8f6;
   --color-ink: #111110;
   --color-taupe: #8c8279;
   --color-border: #e0dcd7;
   --color-muted: #b5b0aa;
-  --font-serif: var(--font-shippori);
-  --font-mono: var(--font-dm-mono);
-  --font-sans: var(--font-dm-sans);
 }
 
 *, *::before, *::after {
@@ -42,7 +39,6 @@ body {
   pointer-events: none;
   z-index: 9999;
   transform: translate(-50%, -50%);
-  transition: width 0.2s, height 0.2s, background 0.2s;
 }
 
 .cursor-ring {
@@ -57,25 +53,7 @@ body {
   transition: width 0.3s, height 0.3s, border-color 0.3s;
 }
 
-body:has(a:hover) .cursor-ring,
-body:has(button:hover) .cursor-ring {
-  width: 56px;
-  height: 56px;
-  border-color: var(--color-ink);
-}
-
-/* テキストマスクアニメ用 */
-.clip-reveal {
-  clip-path: inset(0 100% 0 0);
-}
-
 /* スクロールバー */
-::-webkit-scrollbar {
-  width: 4px;
-}
-::-webkit-scrollbar-track {
-  background: var(--color-bg);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: var(--color-border); }
