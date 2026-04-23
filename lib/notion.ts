@@ -15,13 +15,19 @@ export interface Proposal {
 
 function pageToProposal(page: any): Proposal {
   const props = page.properties as Record<string, any>
+
+  const rawWorks = props.selected_works?.rich_text?.map((t: any) => t.plain_text).join('') ?? ''
+  const selectedWorks = rawWorks ? rawWorks.split(',').map((s: string) => s.trim()).filter(Boolean) : []
+
+  const status = (props.status?.rich_text?.map((t: any) => t.plain_text).join('') ?? 'draft') as Proposal['status']
+
   return {
     id: page.id,
     slug: props.slug?.rich_text?.[0]?.plain_text ?? '',
     clientName: props.client_name?.rich_text?.[0]?.plain_text ?? '',
     proposalText: props.proposal_text?.rich_text?.map((t: any) => t.plain_text).join('') ?? '',
-    selectedWorks: props.selected_works?.multi_select?.map((s: any) => s.name) ?? [],
-    status: props.status?.select?.name ?? 'draft',
+    selectedWorks,
+    status,
     createdAt: page.created_time,
   }
 }
@@ -33,7 +39,7 @@ export async function getProposalBySlug(slug: string): Promise<Proposal | null> 
     filter: {
       and: [
         { property: 'slug', rich_text: { equals: slug } },
-        { property: 'status', select: { equals: 'active' } },
+        { property: 'status', rich_text: { equals: 'active' } },
       ],
     },
   })
@@ -48,9 +54,7 @@ export async function getAllProposals(): Promise<Proposal[]> {
     database_id: DATABASE_ID,
     sorts: [{ timestamp: 'created_time', direction: 'descending' }],
   })
-  return res.results
-    .filter(p => 'properties' in p)
-    .map(pageToProposal)
+  return res.results.filter(p => 'properties' in p).map(pageToProposal)
 }
 
 // 管理用：提案を作成
@@ -60,7 +64,6 @@ export async function createProposal(data: {
   proposalText: string
   selectedWorks: string[]
 }): Promise<Proposal> {
-  // DBスキーマからtitleプロパティ名を自動検出（"Name" / "名前" など環境によって異なる）
   const db = await notion.databases.retrieve({ database_id: DATABASE_ID }) as any
   const titlePropName = Object.entries(db.properties as Record<string, any>)
     .find(([_, prop]) => prop.type === 'title')?.[0] ?? 'Name'
@@ -72,8 +75,9 @@ export async function createProposal(data: {
       slug: { rich_text: [{ text: { content: data.slug } }] },
       client_name: { rich_text: [{ text: { content: data.clientName } }] },
       proposal_text: { rich_text: [{ text: { content: data.proposalText } }] },
-      selected_works: { multi_select: data.selectedWorks.map(name => ({ name })) },
-      status: { select: { name: 'active' } },
+      // selected_works: カンマ区切りのテキストで保存
+      selected_works: { rich_text: [{ text: { content: data.selectedWorks.join(',') } }] },
+      status: { rich_text: [{ text: { content: 'active' } }] },
     },
   }) as any
   return pageToProposal(page)
@@ -87,7 +91,7 @@ export async function updateProposalStatus(
   await notion.pages.update({
     page_id: id,
     properties: {
-      status: { select: { name: status } },
+      status: { rich_text: [{ text: { content: status } }] },
     },
   })
 }
