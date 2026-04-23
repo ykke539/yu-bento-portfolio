@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-bg: #f9f8f6;
+  --color-ink: #111110;
+  --color-taupe: #8c8279;
+  --color-border: #e0dcd7;
+  --color-muted: #b5b0aa;
+  --font-serif: var(--font-shippori);
+  --font-mono: var(--font-dm-mono);
+  --font-sans: var(--font-dm-sans);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-dm-sans), 'Helvetica Neue', sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* カーソル */
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--color-ink);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s, background 0.2s;
+}
+
+.cursor-ring {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-taupe);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s, border-color 0.3s;
+}
+
+body:has(a:hover) .cursor-ring,
+body:has(button:hover) .cursor-ring {
+  width: 56px;
+  height: 56px;
+  border-color: var(--color-ink);
+}
+
+/* テキストマスクアニメ用 */
+.clip-reveal {
+  clip-path: inset(0 100% 0 0);
+}
+
+/* スクロールバー */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+}
