@@ -60,11 +60,15 @@ export async function createProposal(data: {
   proposalText: string
   selectedWorks: string[]
 }): Promise<Proposal> {
+  // DBスキーマからtitleプロパティ名を自動検出（"Name" / "名前" など環境によって異なる）
+  const db = await notion.databases.retrieve({ database_id: DATABASE_ID }) as any
+  const titlePropName = Object.entries(db.properties as Record<string, any>)
+    .find(([_, prop]) => prop.type === 'title')?.[0] ?? 'Name'
+
   const page = await notion.pages.create({
     parent: { database_id: DATABASE_ID },
     properties: {
-      // Notionのtitleプロパティ（DB名が"Name"の場合）
-      Name: { title: [{ text: { content: data.clientName } }] },
+      [titlePropName]: { title: [{ text: { content: data.clientName } }] },
       slug: { rich_text: [{ text: { content: data.slug } }] },
       client_name: { rich_text: [{ text: { content: data.clientName } }] },
       proposal_text: { rich_text: [{ text: { content: data.proposalText } }] },

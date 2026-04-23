@@ -27,9 +27,12 @@ export default function NewProposalPage() {
     }))
   }
 
+  const [errorMsg, setErrorMsg] = useState('')
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setStatus('submitting')
+    setErrorMsg('')
     const res = await fetch('/api/admin/proposals', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -40,6 +43,8 @@ export default function NewProposalPage() {
       setCreatedSlug(data.slug)
       setStatus('done')
     } else {
+      const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
+      setErrorMsg(body.error ?? '不明なエラー')
       setStatus('error')
     }
   }
@@ -149,7 +154,8 @@ export default function NewProposalPage() {
 
           {status === 'error' && (
             <div style={{ padding: '12px 16px', background: '#fef2f2', borderRadius: '6px', fontSize: '13px', color: '#dc2626' }}>
-              作成に失敗しました。Notion APIの設定を確認してください。
+              <div style={{ fontWeight: 600, marginBottom: '4px' }}>作成に失敗しました</div>
+              <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontSize: '12px', marginTop: '4px' }}>{errorMsg}</pre>
             </div>
           )}
 

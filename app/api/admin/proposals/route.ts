@@ -39,10 +39,18 @@ export async function POST(req: NextRequest) {
 
   const { clientName, proposalText, selectedWorks } = await req.json()
   if (!clientName || !proposalText) {
-    return NextResponse.json({ error: 'clientName and proposalText are required' }, { status: 400 })
+    return NextResponse.json({ error: 'clientName と proposalText は必須です' }, { status: 400 })
   }
 
-  const slug = crypto.randomUUID()
-  const proposal = await createProposal({ slug, clientName, proposalText, selectedWorks: selectedWorks ?? [] })
-  return NextResponse.json(proposal, { status: 201 })
+  try {
+    const slug = crypto.randomUUID()
+    const proposal = await createProposal({ slug, clientName, proposalText, selectedWorks: selectedWorks ?? [] })
+    return NextResponse.json(proposal, { status: 201 })
+  } catch (e: any) {
+    console.error('[admin/proposals POST]', e)
+    return NextResponse.json(
+      { error: `Notion API エラー: ${e.message ?? JSON.stringify(e)}` },
+      { status: 500 }
+    )
+  }
 }
