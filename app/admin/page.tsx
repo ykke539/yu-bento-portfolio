@@ -120,7 +120,10 @@ export default function AdminPage() {
               <div key={p.id} style={s.row}>
                 <div>
                   <div style={s.clientName}>{p.clientName || '（名前なし）'}</div>
-                  <div style={s.slug}>/proposal/{p.slug}</div>
+                  <div style={s.slug}>
+                    {p.order !== 999 && <span style={{ marginRight: '8px', color: '#d6d3d1' }}>#{p.order}</span>}
+                    /proposal/{p.slug}
+                  </div>
                 </div>
                 <span style={badge(p.status)}>{STATUS_LABEL[p.status]?.label ?? p.status}</span>
                 <button
@@ -129,15 +132,12 @@ export default function AdminPage() {
                 >
                   {copied === p.slug ? '✓ コピー済み' : 'URLをコピー'}
                 </button>
-                <select
-                  value={p.status}
-                  onChange={e => updateStatus(p.id, e.target.value)}
-                  style={s.select}
+                <Link
+                  href={`/admin/proposals/${p.id}`}
+                  style={{ ...s.copyBtn, textDecoration: 'none', color: '#44403c' } as React.CSSProperties}
                 >
-                  <option value="active">公開中</option>
-                  <option value="draft">ドラフト</option>
-                  <option value="archived">アーカイブ</option>
-                </select>
+                  編集
+                </Link>
               </div>
             ))
           )}
