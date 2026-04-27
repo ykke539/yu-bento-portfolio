@@ -1,31 +1,7 @@
 import { notFound } from 'next/navigation'
 import { getProposalBySlug } from '@/lib/notion'
+import { getWorkBySlug } from '@/lib/notion-works'
 import Footer from '@/components/Footer'
-
-const ALL_WORKS: Record<string, { name: string; cat: string; desc: string; tags: string[]; url?: string }> = {
-  perzona: {
-    name: 'Perzona', cat: 'Web App / Full Stack',
-    desc: 'AIパーソナ診断サービス。着想からロゴ・全デザイン・全実装まで一人称で担当。決済（Stripe）を含むフルスタック構築。',
-    tags: ['Next.js', 'TypeScript', 'Stripe', 'Tailwind', 'Vercel'],
-    url: 'https://perzona.site/',
-  },
-  annonline: {
-    name: 'annonline.jp', cat: 'WordPress / Full Stack',
-    desc: 'WordPressオリジナルテーマをゼロから設計・構築。テンプレートや既製テーマへの依存なし。',
-    tags: ['WordPress', 'PHP', 'CSS', 'JavaScript'],
-    url: 'https://annonline.jp/',
-  },
-  'ag-logo': {
-    name: 'AG — ロゴデザイン', cat: 'Logo Design',
-    desc: 'パフォーマー「AG」さんのロゴ。Adobe Illustratorで文字に人格を持たせる設計を行った。',
-    tags: ['Adobe Illustrator', 'Brand Design'],
-  },
-  automation: {
-    name: '業務効率化システム群', cat: 'Automation / Internal Tools',
-    desc: 'ExcelVBA〜Next.jsまで、課題に最適な道具を選び複数の業務自動化ツールを設計・実装。',
-    tags: ['Excel VBA', 'GAS', 'Next.js', 'TypeScript'],
-  },
-}
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -36,9 +12,10 @@ export default async function ProposalPage({ params }: Props) {
   const proposal = await getProposalBySlug(slug)
   if (!proposal) notFound()
 
-  const works = proposal.selectedWorks
-    .map(key => ({ key, ...ALL_WORKS[key] }))
-    .filter(w => w.name)
+  const worksData = await Promise.all(
+    proposal.selectedWorks.map(s => getWorkBySlug(s))
+  )
+  const works = worksData.filter(Boolean) as NonNullable<typeof worksData[0]>[]
 
   return (
     <main>
@@ -78,7 +55,7 @@ export default async function ProposalPage({ params }: Props) {
         <div className="flex flex-col gap-0">
           {works.map((work, i) => (
             <div
-              key={work.key}
+              key={work.id}
               className="py-12"
               style={{ borderTop: i === 0 ? '1px solid var(--color-border)' : undefined, borderBottom: '1px solid var(--color-border)' }}
             >
@@ -106,22 +83,25 @@ export default async function ProposalPage({ params }: Props) {
                 className="mb-4"
                 style={{ fontFamily: 'var(--font-shippori)', fontSize: 'clamp(28px, 4vw, 56px)', fontWeight: 400, color: 'var(--color-ink)', lineHeight: 1.2 }}
               >
-                {work.name}
+                {work.title}
               </h2>
               <p className="text-[14px] leading-[1.9] mb-8" style={{ color: 'var(--color-muted)', maxWidth: '560px' }}>
-                {work.desc}
+                {work.subtitle}
               </p>
-              <div className="flex flex-wrap gap-2">
-                {work.tags.map(tag => (
-                  <span
-                    key={tag}
-                    className="text-[10px] px-2.5 py-1 tracking-[0.06em]"
-                    style={{ fontFamily: 'var(--font-dm-mono)', color: 'var(--color-taupe)', border: '1px solid var(--color-border)' }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+              {/* Stack タグ */}
+              {work.scope.filter(r => r.tags).map(r => (
+                <div key={r.key} className="flex flex-wrap gap-2">
+                  {r.tags!.map(tag => (
+                    <span
+                      key={tag}
+                      className="text-[10px] px-2.5 py-1 tracking-[0.06em]"
+                      style={{ fontFamily: 'var(--font-dm-mono)', color: 'var(--color-taupe)', border: '1px solid var(--color-border)' }}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              ))}
             </div>
           ))}
         </div>
@@ -132,9 +112,7 @@ export default async function ProposalPage({ params }: Props) {
         className="px-14 py-36 max-w-[1200px] mx-auto"
         style={{ borderTop: '1px solid var(--color-border)' }}
       >
-        <div
-          className="flex items-center gap-5 mb-16"
-        >
+        <div className="flex items-center gap-5 mb-16">
           <span style={{ fontFamily: 'var(--font-dm-mono)', fontSize: '11px', color: 'var(--color-taupe)', letterSpacing: '0.1em' }}>Profile</span>
           <span className="flex-1 h-px" style={{ background: 'var(--color-border)' }} />
         </div>

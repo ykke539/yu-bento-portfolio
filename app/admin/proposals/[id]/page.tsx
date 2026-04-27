@@ -5,51 +5,39 @@ import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import type { Proposal } from '@/lib/notion'
 
-const WORKS = [
-  { id: 'perzona',    label: 'Perzona — Web App / Full Stack' },
-  { id: 'annonline',  label: 'annonline.jp — WordPress / Full Stack' },
-  { id: 'ag-logo',    label: 'AG — ロゴデザイン' },
-  { id: 'automation', label: '業務効率化システム群' },
-]
+interface WorkOption { id: string; slug: string; title: string; cat: string; status: string }
 
 export default function EditProposalPage() {
   const params = useParams()
   const id = params.id as string
   const router = useRouter()
 
-  const [form, setForm] = useState({ clientName: '', proposalText: '', selectedWorks: [] as string[], status: 'active' as Proposal['status'], order: '' })
+  const [form, setForm] = useState({ clientName: '', proposalText: '', selectedWorks: [] as string[], status: 'active' as Proposal['status'], order: '', memo: '' })
+  const [works, setWorks] = useState<WorkOption[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
-
   const [slug, setSlug] = useState('')
 
   useEffect(() => {
-    fetch(`/api/admin/proposals/${id}`)
-      .then(r => r.json())
-      .then(data => {
-        setSlug(data.slug ?? '')
-        setForm({
-          clientName: data.clientName ?? '',
-          proposalText: data.proposalText ?? '',
-          selectedWorks: data.selectedWorks ?? [],
-          status: data.status ?? 'active',
-          order: data.order !== 999 ? String(data.order) : '',
-        })
-        setLoading(false)
+    Promise.all([
+      fetch(`/api/admin/proposals/${id}`).then(r => r.json()),
+      fetch('/api/admin/works').then(r => r.json()),
+    ]).then(([data, worksData]) => {
+      setSlug(data.slug ?? '')
+      setForm({
+        clientName: data.clientName ?? '',
+        proposalText: data.proposalText ?? '',
+        selectedWorks: data.selectedWorks ?? [],
+        status: data.status ?? 'active',
+        order: data.order !== 999 ? String(data.order) : '',
+        memo: data.memo ?? '',
       })
-      .catch(() => setLoading(false))
+      setWorks((worksData as WorkOption[]).filter(w => w.status === 'active' || (data.selectedWorks ?? []).includes(w.slug)))
+      setLoading(false)
+    }).catch(() => setLoading(false))
   }, [id])
-
-  const toggleWork = (wid: string) => {
-    setForm(f => ({
-      ...f,
-      selectedWorks: f.selectedWorks.includes(wid)
-        ? f.selectedWorks.filter(w => w !== wid)
-        : [...f.selectedWorks, wid],
-    }))
-  }
 
   const handleSave = async () => {
     setSaving(true)
@@ -62,6 +50,7 @@ export default function EditProposalPage() {
         proposalText: form.proposalText,
         selectedWorks: form.selectedWorks,
         status: form.status,
+        memo: form.memo,
         ...(form.order !== '' ? { order: Number(form.order) } : {}),
       }),
     })
@@ -75,8 +64,6 @@ export default function EditProposalPage() {
     setSaving(false)
   }
 
-  const saveBtn = (ok: boolean): React.CSSProperties => ({ padding: '10px 28px', background: ok ? '#166534' : '#111110', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '14px', fontWeight: 500, cursor: 'pointer', transition: 'background 0.2s' })
-
   const s: Record<string, React.CSSProperties> = {
     header: { background: '#fff', borderBottom: '1px solid #e7e5e4', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '56px' },
     headerLeft: { display: 'flex', alignItems: 'center', gap: '16px' },
@@ -88,6 +75,8 @@ export default function EditProposalPage() {
     textarea: { width: '100%', padding: '10px 12px', border: '1px solid #e7e5e4', borderRadius: '6px', fontSize: '14px', outline: 'none', resize: 'vertical' as const, minHeight: '160px', boxSizing: 'border-box' as const, lineHeight: '1.7', fontFamily: 'inherit' },
     hint: { fontSize: '12px', color: '#a8a29e', marginTop: '6px' },
   }
+
+  const saveBtn = (ok: boolean): React.CSSProperties => ({ padding: '10px 28px', background: ok ? '#166534' : '#111110', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '14px', fontWeight: 500, cursor: 'pointer', transition: 'background 0.2s' })
 
   if (loading) return (
     <>
@@ -122,62 +111,34 @@ export default function EditProposalPage() {
           </div>
 
           <div>
-            <label style={s.label}>表示する実績（上から順に表示）</label>
+            <label style={s.label}>メモ</label>
+            <input type="text" value={form.memo} onChange={e => setForm({ ...form, memo: e.target.value })} style={s.input} placeholder="提案先・経緯・メモ等" />
+          </div>
 
-            {/* 選択済み：並び替え可能 */}
+          <div>
+            <label style={s.label}>表示する実績（上から順に表示）</label>
             {form.selectedWorks.length > 0 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
-                {form.selectedWorks.map((wid, idx) => {
-                  const work = WORKS.find(w => w.id === wid)
-                  if (!work) return null
+                {form.selectedWorks.map((slug, idx) => {
+                  const work = works.find(w => w.slug === slug)
+                  const label = work ? `${work.title} — ${work.cat}` : slug
                   return (
-                    <div key={wid} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', border: '1px solid #86efac', borderRadius: '6px', background: '#f0fdf4', fontSize: '14px', color: '#44403c' }}>
-                      {/* 並び替えボタン */}
+                    <div key={slug} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', border: '1px solid #86efac', borderRadius: '6px', background: '#f0fdf4', fontSize: '14px', color: '#44403c' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0 }}>
-                        <button
-                          type="button"
-                          disabled={idx === 0}
-                          onClick={() => {
-                            const arr = [...form.selectedWorks]
-                            ;[arr[idx - 1], arr[idx]] = [arr[idx], arr[idx - 1]]
-                            setForm(f => ({ ...f, selectedWorks: arr }))
-                          }}
-                          style={{ padding: '1px 6px', fontSize: '11px', border: '1px solid #d1d5db', borderRadius: '3px', background: '#fff', cursor: idx === 0 ? 'not-allowed' : 'pointer', opacity: idx === 0 ? 0.3 : 1 }}
-                        >↑</button>
-                        <button
-                          type="button"
-                          disabled={idx === form.selectedWorks.length - 1}
-                          onClick={() => {
-                            const arr = [...form.selectedWorks]
-                            ;[arr[idx], arr[idx + 1]] = [arr[idx + 1], arr[idx]]
-                            setForm(f => ({ ...f, selectedWorks: arr }))
-                          }}
-                          style={{ padding: '1px 6px', fontSize: '11px', border: '1px solid #d1d5db', borderRadius: '3px', background: '#fff', cursor: idx === form.selectedWorks.length - 1 ? 'not-allowed' : 'pointer', opacity: idx === form.selectedWorks.length - 1 ? 0.3 : 1 }}
-                        >↓</button>
+                        <button type="button" disabled={idx === 0} onClick={() => { const a = [...form.selectedWorks]; [a[idx-1], a[idx]] = [a[idx], a[idx-1]]; setForm(f => ({...f, selectedWorks: a})) }} style={{ padding: '1px 6px', fontSize: '11px', border: '1px solid #d1d5db', borderRadius: '3px', background: '#fff', cursor: idx === 0 ? 'not-allowed' : 'pointer', opacity: idx === 0 ? 0.3 : 1 }}>↑</button>
+                        <button type="button" disabled={idx === form.selectedWorks.length - 1} onClick={() => { const a = [...form.selectedWorks]; [a[idx], a[idx+1]] = [a[idx+1], a[idx]]; setForm(f => ({...f, selectedWorks: a})) }} style={{ padding: '1px 6px', fontSize: '11px', border: '1px solid #d1d5db', borderRadius: '3px', background: '#fff', cursor: idx === form.selectedWorks.length - 1 ? 'not-allowed' : 'pointer', opacity: idx === form.selectedWorks.length - 1 ? 0.3 : 1 }}>↓</button>
                       </div>
-                      <span style={{ flex: 1 }}>{work.label}</span>
-                      {/* 削除ボタン */}
-                      <button
-                        type="button"
-                        onClick={() => setForm(f => ({ ...f, selectedWorks: f.selectedWorks.filter(w => w !== wid) }))}
-                        style={{ padding: '2px 8px', fontSize: '12px', border: '1px solid #fca5a5', borderRadius: '4px', background: '#fff', color: '#dc2626', cursor: 'pointer' }}
-                      >✕</button>
+                      <span style={{ flex: 1 }}>{label}</span>
+                      <button type="button" onClick={() => setForm(f => ({...f, selectedWorks: f.selectedWorks.filter(w => w !== slug)}))} style={{ padding: '2px 8px', fontSize: '12px', border: '1px solid #fca5a5', borderRadius: '4px', background: '#fff', color: '#dc2626', cursor: 'pointer' }}>✕</button>
                     </div>
                   )
                 })}
               </div>
             )}
-
-            {/* 未選択：追加ボタン */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              {WORKS.filter(w => !form.selectedWorks.includes(w.id)).map(w => (
-                <button
-                  key={w.id}
-                  type="button"
-                  onClick={() => setForm(f => ({ ...f, selectedWorks: [...f.selectedWorks, w.id] }))}
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', border: '1px dashed #e7e5e4', borderRadius: '6px', background: '#fff', fontSize: '14px', color: '#a8a29e', cursor: 'pointer', textAlign: 'left' }}
-                >
-                  <span style={{ fontSize: '16px', color: '#d1d5db' }}>+</span> {w.label}
+              {works.filter(w => !form.selectedWorks.includes(w.slug)).map(w => (
+                <button key={w.id} type="button" onClick={() => setForm(f => ({...f, selectedWorks: [...f.selectedWorks, w.slug]}))} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', border: '1px dashed #e7e5e4', borderRadius: '6px', background: '#fff', fontSize: '14px', color: '#a8a29e', cursor: 'pointer', textAlign: 'left' as const }}>
+                  <span style={{ fontSize: '16px', color: '#d1d5db' }}>+</span> {w.title} — {w.cat}
                 </button>
               ))}
             </div>

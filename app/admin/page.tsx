@@ -90,6 +90,7 @@ export default function AdminPage() {
       <header style={s.header}>
         <div style={s.logo}>優.bento Admin</div>
         <div style={s.headerRight}>
+          <Link href="/admin/works" style={{ ...s.newBtn, background: '#fff', color: '#44403c', border: '1px solid #e7e5e4' }}>実績管理</Link>
           <Link href="/admin/proposals/new" style={s.newBtn}>+ 新規作成</Link>
           <button onClick={logout} style={s.logoutBtn}>ログアウト</button>
         </div>
@@ -120,7 +121,7 @@ export default function AdminPage() {
               <div key={p.id} style={s.row}>
                 {/* 上段：名前 + バッジ */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                  <div style={s.clientName}>{p.clientName || '（名前なし）'}</div>
+                  <div style={s.clientName}>{p.clientName || '（名前なし）'}{p.memo ? <span style={{ marginLeft: '8px', fontSize: '11px', color: '#a8a29e', fontWeight: 400 }}>{p.memo}</span> : null}</div>
                   <span style={badge(p.status)}>{STATUS_LABEL[p.status]?.label ?? p.status}</span>
                 </div>
                 {/* 下段：slug + ボタン群 */}

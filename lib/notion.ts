@@ -11,6 +11,7 @@ export interface Proposal {
   selectedWorks: string[]
   status: 'draft' | 'active' | 'archived'
   order: number
+  memo: string
   createdAt?: string
 }
 
@@ -29,6 +30,7 @@ function pageToProposal(page: any): Proposal {
     selectedWorks,
     status,
     order,
+    memo: props.memo?.rich_text?.map((t: any) => t.plain_text).join('') ?? '',
     createdAt: page.created_time,
   }
 }
@@ -76,6 +78,7 @@ export async function createProposal(data: {
   proposalText: string
   selectedWorks: string[]
   order?: number
+  memo?: string
 }): Promise<Proposal> {
   const titlePropName = await getTitlePropName()
   const page = await notion.pages.create({
@@ -87,6 +90,7 @@ export async function createProposal(data: {
       proposal_text: { rich_text: [{ text: { content: data.proposalText } }] },
       selected_works: { rich_text: [{ text: { content: data.selectedWorks.join(',') } }] },
       status: { rich_text: [{ text: { content: 'active' } }] },
+      memo: { rich_text: [{ text: { content: data.memo ?? '' } }] },
       ...(data.order !== undefined ? { order: { number: data.order } } : {}),
     },
   }) as any
@@ -99,6 +103,7 @@ export async function updateProposal(id: string, data: {
   selectedWorks?: string[]
   status?: 'draft' | 'active' | 'archived'
   order?: number
+  memo?: string
 }): Promise<void> {
   const props: Record<string, any> = {}
   if (data.clientName !== undefined) {
@@ -114,6 +119,8 @@ export async function updateProposal(id: string, data: {
     props.status = { rich_text: [{ text: { content: data.status } }] }
   if (data.order !== undefined)
     props.order = { number: data.order }
+  if (data.memo !== undefined)
+    props.memo = { rich_text: [{ text: { content: data.memo } }] }
 
   await notion.pages.update({ page_id: id, properties: props })
 }
