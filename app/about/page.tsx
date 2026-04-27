@@ -1,4 +1,5 @@
 import Footer from '@/components/Footer'
+import { getAboutContent } from '@/lib/notion-about'
 
 export const metadata = {
   title: 'About — 優.bento',
@@ -40,7 +41,9 @@ const skills = [
 const monoStyle = { fontFamily: 'var(--font-dm-mono)' }
 const serifStyle = { fontFamily: 'var(--font-shippori)' }
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const { journey, misc } = await getAboutContent()
+
   return (
     <main>
       {/* HERO SPLIT */}
@@ -130,7 +133,7 @@ export default function AboutPage() {
         </div>
       </div>
 
-      {/* STORY */}
+      {/* JOURNEY */}
       <div className="max-w-[1200px] mx-auto px-6 md:px-14">
         <div className="py-16 md:py-28" style={{ borderTop: '1px solid var(--color-border)' }}>
           <div className="flex items-center gap-5 mb-16">
@@ -139,31 +142,19 @@ export default function AboutPage() {
             <span style={{ ...monoStyle, fontSize: '11px', color: 'var(--color-muted)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Journey</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-20">
+            <div />
             <div>
-              <div
-                className="text-[10px] leading-[2] tracking-[0.1em] p-4"
-                style={{ ...monoStyle, color: 'var(--color-border)', border: '1px dashed var(--color-border)' }}
-              >
-                ※ この遍歴ストーリーは<br />
-                あなたの言葉で埋めてください。<br />
-                構造だけ用意しています。
-              </div>
-            </div>
-            <div>
-              {[
-                { year: 'Chapter 01', title: '最初の一歩 — なぜエンジニアになったのか', body: 'ここに、最初にコードやデザインに触れたきっかけを書いてください。どんな問いや違和感が、今のあなたの原点にありますか。' },
-                { year: 'Chapter 02', title: '転換点 — デザインと出会ったとき', body: 'エンジニアとしてのキャリアの中で、UIやUXへの関心が生まれた瞬間はどこでしたか。実装だけでは足りないと感じた体験を書いてください。' },
-                { year: 'Chapter 03', title: 'AIとの出会い — 道具として使うということ', body: 'AIを「設計に使う人」になった経緯。速さのためではなく、本質に集中するためにAIを選んだ理由を書いてください。' },
-                { year: 'Now', title: '優.bento — 思考を信用してもらう場所として', body: '今、なぜこのブランドなのか。「まったり、丁寧に、本質をレジスタンス」という言葉に込めた意味を書いてください。' },
-              ].map((ch, i) => (
+              {journey.map(ch => (
                 <div
-                  key={i}
+                  key={ch.id}
                   className="py-8"
                   style={{ borderBottom: '1px solid var(--color-border)' }}
                 >
-                  <div className="mb-3 text-[10px] tracking-[0.12em]" style={{ ...monoStyle, color: 'var(--color-taupe)' }}>{ch.year}</div>
+                  <div className="mb-3 text-[10px] tracking-[0.12em]" style={{ ...monoStyle, color: 'var(--color-taupe)' }}>{ch.sub_label}</div>
                   <div className="mb-3 text-[20px] font-medium leading-[1.5]" style={{ ...serifStyle, color: 'var(--color-ink)' }}>{ch.title}</div>
-                  <div className="text-[13px] leading-[1.9]" style={{ color: 'var(--color-muted)' }}>{ch.body}</div>
+                  {ch.body && (
+                    <div className="text-[13px] leading-[1.9] whitespace-pre-line" style={{ color: 'var(--color-muted)' }}>{ch.body}</div>
+                  )}
                 </div>
               ))}
             </div>
@@ -207,6 +198,50 @@ export default function AboutPage() {
           </div>
         </div>
       </div>
+
+      {/* MISC */}
+      {misc.length > 0 && (
+        <div className="max-w-[1200px] mx-auto px-6 md:px-14">
+          <div className="py-16 md:py-28" style={{ borderTop: '1px solid var(--color-border)' }}>
+            <div className="flex items-center gap-5 mb-16">
+              <span style={{ ...monoStyle, fontSize: '11px', color: 'var(--color-taupe)', letterSpacing: '0.1em' }}>03</span>
+              <span className="flex-1 h-px" style={{ background: 'var(--color-border)' }} />
+              <span style={{ ...monoStyle, fontSize: '11px', color: 'var(--color-muted)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Elsewhere</span>
+            </div>
+            <div className="flex flex-col gap-0" style={{ maxWidth: '480px' }}>
+              {misc.map(link => (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-8 py-5 no-underline group transition-colors"
+                  style={{ borderBottom: '1px solid var(--color-border)' }}
+                >
+                  <span
+                    className="text-[10px] tracking-[0.1em] uppercase"
+                    style={{ ...monoStyle, color: 'var(--color-muted)', minWidth: '72px' }}
+                  >
+                    {link.sub_label}
+                  </span>
+                  <span
+                    className="text-[14px] transition-colors"
+                    style={{ ...serifStyle, color: 'var(--color-ink)' }}
+                  >
+                    {link.name}
+                  </span>
+                  <span
+                    className="ml-auto text-[11px] transition-colors"
+                    style={{ ...monoStyle, color: 'var(--color-muted)' }}
+                  >
+                    ↗
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* footer nav */}
       <div
