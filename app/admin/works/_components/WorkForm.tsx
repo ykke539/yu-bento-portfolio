@@ -149,7 +149,7 @@ export default function WorkForm({ title, backHref, initialData, onSave, saving,
         <div style={s.section}>
           <div style={s.sectionTitle}>Thinking</div>
           {f.thinking.map((t, i) => (
-            <div key={i} style={{ ...s.rowBox, flexDirection: 'column', gap: '10px' }}>
+            <div key={i} style={{ ...s.rowBox, flexDirection: 'column', gap: '10px', alignItems: 'stretch' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '11px', color: '#a8a29e', fontWeight: 500 }}>#{i + 1}</span>
                 <button style={s.delBtn} onClick={() => setF(p => ({ ...p, thinking: p.thinking.filter((_, j) => j !== i) }))}>✕</button>
