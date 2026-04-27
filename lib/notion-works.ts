@@ -26,6 +26,7 @@ export interface Work {
   subtitle: string
   scope: ScopeRow[]
   thinking: ThinkingItem[]
+  images: string[]
   order: number
   status: string
 }
@@ -61,20 +62,29 @@ export function formatScope(rows: ScopeRow[]): string {
     .join('\n')
 }
 
-export async function fetchThinkingBlocks(pageId: string): Promise<ThinkingItem[]> {
+export async function fetchPageContent(pageId: string): Promise<{ thinking: ThinkingItem[]; images: string[] }> {
   const res = await notion.blocks.children.list({ block_id: pageId })
-  const items: ThinkingItem[] = []
+  const thinking: ThinkingItem[] = []
+  const images: string[] = []
   let current: Partial<ThinkingItem> = {}
 
   for (const block of res.results) {
-    if (!('type' in block) || block.type !== 'paragraph') continue
-    const text = (block as any).paragraph.rich_text
-      .map((t: any) => t.plain_text)
-      .join('')
+    if (!('type' in block)) continue
+    const b = block as any
+
+    // 画像ブロック
+    if (b.type === 'image') {
+      const url = b.image?.file?.url ?? b.image?.external?.url ?? ''
+      if (url) images.push(url)
+      continue
+    }
+
+    if (b.type !== 'paragraph') continue
+    const text = b.paragraph.rich_text.map((t: any) => t.plain_text).join('')
     if (!text.trim()) continue
 
     if (text.startsWith('Q:')) {
-      if (current.q && current.a && current.body) items.push(current as ThinkingItem)
+      if (current.q && current.a && current.body) thinking.push(current as ThinkingItem)
       current = { q: text.slice(2).trim() }
     } else if (text.startsWith('A:')) {
       current.a = text.slice(2).trim()
@@ -82,8 +92,13 @@ export async function fetchThinkingBlocks(pageId: string): Promise<ThinkingItem[
       current.body = text.slice(5).trim()
     }
   }
-  if (current.q && current.a && current.body) items.push(current as ThinkingItem)
-  return items
+  if (current.q && current.a && current.body) thinking.push(current as ThinkingItem)
+  return { thinking, images }
+}
+
+// 後方互換のため残す
+export async function fetchThinkingBlocks(pageId: string): Promise<ThinkingItem[]> {
+  return (await fetchPageContent(pageId)).thinking
 }
 
 export function buildThinkingBlocks(thinking: ThinkingItem[]) {
@@ -113,6 +128,7 @@ function pageToWork(page: any): Omit<Work, 'thinking'> {
     title: getTitleText(props),
     subtitle: props.subtitle?.rich_text?.map((t: any) => t.plain_text).join('') ?? '',
     scope: parseScope(scopeText),
+    images: [],
     order: props.order?.number ?? 999,
     status: props.status?.rich_text?.[0]?.plain_text ?? 'draft',
   }
@@ -127,10 +143,10 @@ async function fetchWorks(): Promise<Work[]> {
 
   const pages = res.results.filter(p => 'properties' in p)
   const works = await Promise.all(
-    pages.map(async (page: any) => ({
-      ...pageToWork(page),
-      thinking: await fetchThinkingBlocks(page.id),
-    }))
+    pages.map(async (page: any) => {
+      const pc = await fetchPageContent(page.id)
+      return { ...pageToWork(page), ...pc }
+    })
   )
   return works.sort((a, b) => a.order - b.order)
 }
@@ -148,21 +164,22 @@ export async function getWorkBySlug(slug: string): Promise<Work | null> {
   })
   const page = res.results.find(p => 'properties' in p) as any
   if (!page) return null
-  return { ...pageToWork(page), thinking: await fetchThinkingBlocks(page.id) }
+  const pc = await fetchPageContent(page.id)
+  return { ...pageToWork(page), ...pc }
 }
 
 // 管理画面用：全ステータスを返す（キャッシュなし）
-export async function getAllWorksForAdmin(): Promise<(Omit<Work, 'thinking'> & { thinking: ThinkingItem[] })[]> {
+export async function getAllWorksForAdmin(): Promise<Work[]> {
   const res = await notion.databases.query({
     database_id: WORKS_DB_ID,
     sorts: [{ property: 'order', direction: 'ascending' }],
   })
   const pages = res.results.filter(p => 'properties' in p)
   const works = await Promise.all(
-    pages.map(async (page: any) => ({
-      ...pageToWork(page),
-      thinking: await fetchThinkingBlocks(page.id),
-    }))
+    pages.map(async (page: any) => {
+      const pc = await fetchPageContent(page.id)
+      return { ...pageToWork(page), ...pc }
+    })
   )
   return works.sort((a, b) => a.order - b.order)
 }
@@ -171,7 +188,8 @@ export async function getAllWorksForAdmin(): Promise<(Omit<Work, 'thinking'> & {
 export async function getWorkForAdmin(notionId: string): Promise<Work | null> {
   const page = await notion.pages.retrieve({ page_id: notionId }) as any
   if (!page || !('properties' in page)) return null
-  return { ...pageToWork(page), thinking: await fetchThinkingBlocks(notionId) }
+  const pc = await fetchPageContent(notionId)
+  return { ...pageToWork(page), ...pc }
 }
 
 export async function createWork(data: {

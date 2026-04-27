@@ -101,6 +101,21 @@ export default async function WorksPage() {
             {work.subtitle}
           </p>
 
+          {/* 画像（Notion ページに貼った画像ブロックを表示） */}
+          {work.images.length > 0 && (
+            <div className="flex flex-col gap-4 mb-20">
+              {work.images.map((src, i) => (
+                <img
+                  key={i}
+                  src={src}
+                  alt={`${work.title} — image ${i + 1}`}
+                  className="w-full"
+                  style={{ maxHeight: '640px', objectFit: 'cover', objectPosition: 'top' }}
+                />
+              ))}
+            </div>
+          )}
+
           {/* scope table */}
           {work.scope.length > 0 && (
             <div className="mb-20" style={{ borderTop: '1px solid var(--color-border)' }}>
