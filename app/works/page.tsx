@@ -97,7 +97,7 @@ export default async function WorksPage() {
           >
             {work.title}
           </h2>
-          <p className="text-[14px] leading-[1.9] mb-16" style={{ color: 'var(--color-muted)', maxWidth: '560px' }}>
+          <p className="text-[14px] leading-[1.9] mb-16 whitespace-pre-line" style={{ color: 'var(--color-muted)', maxWidth: '560px' }}>
             {work.subtitle}
           </p>
 
@@ -166,7 +166,7 @@ export default async function WorksPage() {
                     >
                       {t.a}
                     </div>
-                    <div className="text-[13px] leading-[1.9]" style={{ color: 'var(--color-muted)' }}>
+                    <div className="text-[13px] leading-[1.9] whitespace-pre-line" style={{ color: 'var(--color-muted)' }}>
                       {t.body}
                     </div>
                   </div>

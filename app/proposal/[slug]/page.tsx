@@ -85,7 +85,7 @@ export default async function ProposalPage({ params }: Props) {
               >
                 {work.title}
               </h2>
-              <p className="text-[14px] leading-[1.9] mb-8" style={{ color: 'var(--color-muted)', maxWidth: '560px' }}>
+              <p className="text-[14px] leading-[1.9] mb-8 whitespace-pre-line" style={{ color: 'var(--color-muted)', maxWidth: '560px' }}>
                 {work.subtitle}
               </p>
               {/* Stack タグ */}
