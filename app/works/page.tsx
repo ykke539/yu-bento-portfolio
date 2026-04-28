@@ -1,4 +1,5 @@
 import Footer from '@/components/Footer'
+import ImageGallery from '@/components/ImageGallery'
 import { getWorks } from '@/lib/notion-works'
 
 export const metadata = {
@@ -97,23 +98,17 @@ export default async function WorksPage() {
           >
             {work.title}
           </h2>
-          <p className="text-[14px] leading-[1.9] mb-16 whitespace-pre-line" style={{ color: 'var(--color-muted)', maxWidth: '560px' }}>
-            {work.subtitle}
-          </p>
-
-          {/* 画像（Notion ページに貼った画像ブロックを表示） */}
-          {work.images.length > 0 && (
-            <div className="flex flex-col gap-4 mb-20">
-              {work.images.map((src, i) => (
-                <img
-                  key={i}
-                  src={src}
-                  alt={`${work.title} — image ${i + 1}`}
-                  className="w-full"
-                  style={{ maxHeight: '640px', objectFit: 'cover', objectPosition: 'top' }}
-                />
-              ))}
+          {work.images.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16 items-start">
+              <p className="text-[14px] leading-[1.9] whitespace-pre-line" style={{ color: 'var(--color-muted)' }}>
+                {work.subtitle}
+              </p>
+              <ImageGallery images={work.images} alt={work.title} />
             </div>
+          ) : (
+            <p className="text-[14px] leading-[1.9] mb-16 whitespace-pre-line" style={{ color: 'var(--color-muted)', maxWidth: '560px' }}>
+              {work.subtitle}
+            </p>
           )}
 
           {/* scope table */}

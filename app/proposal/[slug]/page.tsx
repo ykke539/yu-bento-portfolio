@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { getProposalBySlug } from '@/lib/notion'
 import { getWorkBySlug } from '@/lib/notion-works'
+import ImageGallery from '@/components/ImageGallery'
 import Footer from '@/components/Footer'
 
 interface Props {
@@ -85,9 +86,18 @@ export default async function ProposalPage({ params }: Props) {
               >
                 {work.title}
               </h2>
-              <p className="text-[14px] leading-[1.9] mb-8 whitespace-pre-line" style={{ color: 'var(--color-muted)', maxWidth: '560px' }}>
-                {work.subtitle}
-              </p>
+              {work.images.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 items-start">
+                  <p className="text-[14px] leading-[1.9] whitespace-pre-line" style={{ color: 'var(--color-muted)' }}>
+                    {work.subtitle}
+                  </p>
+                  <ImageGallery images={work.images} alt={work.title} />
+                </div>
+              ) : (
+                <p className="text-[14px] leading-[1.9] mb-8 whitespace-pre-line" style={{ color: 'var(--color-muted)', maxWidth: '560px' }}>
+                  {work.subtitle}
+                </p>
+              )}
               {/* Stack タグ */}
               {work.scope.filter(r => r.tags).map(r => (
                 <div key={r.key} className="flex flex-wrap gap-2">
