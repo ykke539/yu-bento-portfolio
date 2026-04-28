@@ -99,52 +99,75 @@ export default async function WorksPage() {
             {work.title}
           </h2>
           {work.images.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16 items-start">
-              <p className="text-[14px] leading-[1.9] whitespace-pre-line" style={{ color: 'var(--color-muted)' }}>
-                {work.subtitle}
-              </p>
+            /* 画像あり：左=概要+Scope、右=ギャラリー */
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-20 items-start">
+              <div>
+                <p className="text-[14px] leading-[1.9] whitespace-pre-line mb-10" style={{ color: 'var(--color-muted)' }}>
+                  {work.subtitle}
+                </p>
+                {work.scope.length > 0 && (
+                  <div style={{ borderTop: '1px solid var(--color-border)' }}>
+                    {work.scope.map((row, i) => (
+                      <div
+                        key={i}
+                        className="grid gap-4 py-3 text-[13px]"
+                        style={{ gridTemplateColumns: '120px 1fr', borderBottom: '1px solid var(--color-border)' }}
+                      >
+                        <span className="text-[10px] tracking-[0.1em] uppercase pt-1" style={{ ...monoStyle, color: 'var(--color-muted)' }}>
+                          {row.key}
+                        </span>
+                        <div style={{ color: 'var(--color-ink)' }}>
+                          {row.val || null}
+                          {row.tags && (
+                            <div className="flex flex-wrap gap-2 pt-1">
+                              {row.tags.map(tag => (
+                                <span key={tag} className="text-[10px] px-2.5 py-1 tracking-[0.05em]"
+                                  style={{ ...monoStyle, color: 'var(--color-taupe)', border: '1px solid var(--color-border)' }}>
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
               <ImageGallery images={work.images} alt={work.title} />
             </div>
           ) : (
-            <p className="text-[14px] leading-[1.9] mb-16 whitespace-pre-line" style={{ color: 'var(--color-muted)', maxWidth: '560px' }}>
-              {work.subtitle}
-            </p>
-          )}
-
-          {/* scope table */}
-          {work.scope.length > 0 && (
-            <div className="mb-20" style={{ borderTop: '1px solid var(--color-border)' }}>
-              {work.scope.map((row, i) => (
-                <div
-                  key={i}
-                  className="grid gap-6 py-4 text-[13px]"
-                  style={{ gridTemplateColumns: '140px 1fr', borderBottom: '1px solid var(--color-border)' }}
-                >
-                  <span
-                    className="text-[10px] tracking-[0.1em] uppercase pt-1"
-                    style={{ ...monoStyle, color: 'var(--color-muted)' }}
-                  >
-                    {row.key}
-                  </span>
-                  <div style={{ color: 'var(--color-ink)' }}>
-                    {row.val || null}
-                    {row.tags && (
-                      <div className="flex flex-wrap gap-2 pt-1">
-                        {row.tags.map(tag => (
-                          <span
-                            key={tag}
-                            className="text-[10px] px-2.5 py-1 tracking-[0.05em]"
-                            style={{ ...monoStyle, color: 'var(--color-taupe)', border: '1px solid var(--color-border)' }}
-                          >
-                            {tag}
-                          </span>
-                        ))}
+            /* 画像なし：従来レイアウト */
+            <>
+              <p className="text-[14px] leading-[1.9] mb-16 whitespace-pre-line" style={{ color: 'var(--color-muted)', maxWidth: '560px' }}>
+                {work.subtitle}
+              </p>
+              {work.scope.length > 0 && (
+                <div className="mb-20" style={{ borderTop: '1px solid var(--color-border)' }}>
+                  {work.scope.map((row, i) => (
+                    <div key={i} className="grid gap-6 py-4 text-[13px]"
+                      style={{ gridTemplateColumns: '140px 1fr', borderBottom: '1px solid var(--color-border)' }}>
+                      <span className="text-[10px] tracking-[0.1em] uppercase pt-1" style={{ ...monoStyle, color: 'var(--color-muted)' }}>
+                        {row.key}
+                      </span>
+                      <div style={{ color: 'var(--color-ink)' }}>
+                        {row.val || null}
+                        {row.tags && (
+                          <div className="flex flex-wrap gap-2 pt-1">
+                            {row.tags.map(tag => (
+                              <span key={tag} className="text-[10px] px-2.5 py-1 tracking-[0.05em]"
+                                style={{ ...monoStyle, color: 'var(--color-taupe)', border: '1px solid var(--color-border)' }}>
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
 
           {/* thinking */}
