@@ -27,7 +27,7 @@ export default function ImageGallery({ images, alt }: Props) {
       {/* メイン画像 */}
       <div
         className="relative overflow-hidden w-full"
-        style={{ aspectRatio: '3 / 4', background: 'var(--color-border)' }}
+        style={{ aspectRatio: '4 / 3', background: 'var(--color-border)' }}
       >
         <img
           src={images[selected]}
