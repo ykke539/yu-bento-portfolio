@@ -1,48 +1,35 @@
 import Footer from '@/components/Footer'
-import { getAboutContent } from '@/lib/notion-about'
+import { getAboutContent, type SkillItem } from '@/lib/notion-about'
 
 export const metadata = {
   title: 'About — 優.bento',
 }
 
-const skills = [
-  {
-    group: 'Design',
-    items: [
-      { name: 'UX設計 / 情報設計', level: 'Core' },
-      { name: 'UI設計 / コンポーネント設計', level: 'Core' },
-      { name: 'Figma', level: 'Main tool' },
-      { name: 'Adobe Illustrator', level: 'Logo / Graphics' },
-      { name: 'ロゴデザイン', level: '——' },
-    ],
-  },
-  {
-    group: 'Engineering',
-    items: [
-      { name: 'Next.js / React', level: 'Main' },
-      { name: 'TypeScript', level: '——' },
-      { name: 'Tailwind CSS', level: '——' },
-      { name: 'WordPress (PHP)', level: 'Full stack' },
-      { name: 'Excel VBA / GAS', level: 'Automation' },
-    ],
-  },
-  {
-    group: 'Product',
-    items: [
-      { name: 'AIプロトタイピング', level: 'Core' },
-      { name: '要件定義 / 設計', level: '——' },
-      { name: 'Supabase / Vercel', level: 'Infrastructure' },
-      { name: 'Stripe 決済統合', level: '——' },
-      { name: 'LINE Official設計', level: '——' },
-    ],
-  },
-]
-
 const monoStyle = { fontFamily: 'var(--font-dm-mono)' }
 const serifStyle = { fontFamily: 'var(--font-shippori)' }
 
+function buildSkillGroups(skillItems: SkillItem[]) {
+  const groups: Record<string, { name: string; level: string }[]> = {}
+  const order: string[] = []
+  for (const s of skillItems) {
+    const g = s.body || 'Other'
+    if (!groups[g]) { groups[g] = []; order.push(g) }
+    groups[g].push({ name: s.title, level: s.sub_label })
+  }
+  return order.map(g => ({ group: g, items: groups[g] }))
+}
+
 export default async function AboutPage() {
-  const { journey, misc } = await getAboutContent()
+  const { journey, misc, skills: skillItems, profile } = await getAboutContent()
+
+  const skills = buildSkillGroups(skillItems)
+  const profileMap = Object.fromEntries(profile.map(p => [p.title, p.body]))
+
+  const catchCopy = profileMap['catch_copy'] || 'AI Native Product Designer × Design Engineer'
+  const intro = profileMap['intro'] || 'エンジニアとして実装し、\nデザイナーとして設計し、\n思考する実装者として最後まで持っていく。\n\n「ちゃんと整う」を、一人称で担える人間でいたい。'
+  const statusItems = ['Base', 'Available', 'Type']
+    .map(k => ({ key: k, val: profileMap[k] }))
+    .filter(i => i.val)
 
   return (
     <main>
@@ -107,29 +94,26 @@ export default async function AboutPage() {
             className="mb-10 text-[18px] leading-[1.6]"
             style={{ ...serifStyle, fontWeight: 400, color: 'var(--color-taupe)' }}
           >
-            AI Native Product Designer<br />× Design Engineer
-          </div>
-          <p
-            className="text-[14px] leading-[2]"
-            style={{ color: 'var(--color-ink)', borderLeft: '1px solid var(--color-border)', paddingLeft: '24px', maxWidth: '420px' }}
-          >
-            エンジニアとして実装し、<br />
-            デザイナーとして設計し、<br />
-            思考する実装者として最後まで持っていく。<br /><br />
-            「ちゃんと整う」を、一人称で担える人間でいたい。
-          </p>
-          <div className="flex gap-12 mt-12 pt-10" style={{ borderTop: '1px solid var(--color-border)' }}>
-            {[
-              { key: 'Base', val: 'Tokyo, Japan' },
-              { key: 'Available', val: '案件相談可' },
-              { key: 'Type', val: 'フリーランス' },
-            ].map(({ key, val }) => (
-              <div key={key}>
-                <div className="mb-2 text-[9px] tracking-[0.15em] uppercase" style={{ ...monoStyle, color: 'var(--color-muted)' }}>{key}</div>
-                <div style={{ ...serifStyle, fontSize: '15px', color: 'var(--color-ink)' }}>{val}</div>
-              </div>
+            {catchCopy.split('×').map((part, i) => (
+              <span key={i}>{i > 0 && '× '}{part}{i === 0 && <br />}</span>
             ))}
           </div>
+          <p
+            className="text-[14px] leading-[2] whitespace-pre-line"
+            style={{ color: 'var(--color-ink)', borderLeft: '1px solid var(--color-border)', paddingLeft: '24px', maxWidth: '420px' }}
+          >
+            {intro}
+          </p>
+          {statusItems.length > 0 && (
+            <div className="flex gap-12 mt-12 pt-10" style={{ borderTop: '1px solid var(--color-border)' }}>
+              {statusItems.map(({ key, val }) => (
+                <div key={key}>
+                  <div className="mb-2 text-[9px] tracking-[0.15em] uppercase" style={{ ...monoStyle, color: 'var(--color-muted)' }}>{key}</div>
+                  <div style={{ ...serifStyle, fontSize: '15px', color: 'var(--color-ink)' }}>{val}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

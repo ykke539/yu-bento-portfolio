@@ -6,6 +6,7 @@ const ABOUT_DB_ID = process.env.NOTION_ABOUT_DB_ID!
 
 export interface JourneyItem {
   id: string
+  section: 'journey'
   sub_label: string
   title: string
   body: string
@@ -14,8 +15,36 @@ export interface JourneyItem {
 
 export interface MiscLink {
   id: string
+  section: 'misc'
   sub_label: string
   name: string
+  url: string
+  order: number
+}
+
+export interface SkillItem {
+  id: string
+  section: 'skills'
+  title: string      // スキル名
+  sub_label: string  // レベル表記
+  body: string       // グループ（Design / Engineering / Product）
+  order: number
+}
+
+export interface ProfileItem {
+  id: string
+  section: 'profile'
+  title: string  // キー（catch_copy / intro / Base / Available / Type）
+  body: string   // 値
+  order: number
+}
+
+export interface AboutItem {
+  id: string
+  section: string
+  title: string
+  sub_label: string
+  body: string
   url: string
   order: number
 }
@@ -29,7 +58,12 @@ function getTitleText(props: Record<string, any>): string {
   return p?.title?.[0]?.plain_text ?? ''
 }
 
-async function fetchAbout(): Promise<{ journey: JourneyItem[]; misc: MiscLink[] }> {
+async function fetchAbout(): Promise<{
+  journey: JourneyItem[]
+  misc: MiscLink[]
+  skills: SkillItem[]
+  profile: ProfileItem[]
+}> {
   const res = await notion.databases.query({
     database_id: ABOUT_DB_ID,
     sorts: [{ property: 'order', direction: 'ascending' }],
@@ -37,35 +71,141 @@ async function fetchAbout(): Promise<{ journey: JourneyItem[]; misc: MiscLink[] 
 
   const journey: JourneyItem[] = []
   const misc: MiscLink[] = []
+  const skills: SkillItem[] = []
+  const profile: ProfileItem[] = []
 
   for (const page of res.results) {
     if (!('properties' in page)) continue
     const props = page.properties as Record<string, any>
     const section = getText(props, 'section')
+    const order = props.order?.number ?? 99
 
     if (section === 'journey') {
       journey.push({
         id: page.id,
+        section: 'journey',
         sub_label: getText(props, 'sub_label'),
         title: getTitleText(props),
         body: getText(props, 'body'),
-        order: props.order?.number ?? 99,
+        order,
       })
     } else if (section === 'misc') {
       misc.push({
         id: page.id,
+        section: 'misc',
         sub_label: getText(props, 'sub_label'),
         name: getTitleText(props),
         url: getText(props, 'url'),
-        order: props.order?.number ?? 99,
+        order,
+      })
+    } else if (section === 'skills') {
+      skills.push({
+        id: page.id,
+        section: 'skills',
+        title: getTitleText(props),
+        sub_label: getText(props, 'sub_label'),
+        body: getText(props, 'body'),
+        order,
+      })
+    } else if (section === 'profile') {
+      profile.push({
+        id: page.id,
+        section: 'profile',
+        title: getTitleText(props),
+        body: getText(props, 'body'),
+        order,
       })
     }
   }
 
-  return { journey, misc }
+  return { journey, misc, skills, profile }
 }
 
 export const getAboutContent = unstable_cache(fetchAbout, ['about'], {
   revalidate: 300,
   tags: ['about'],
 })
+
+// 管理画面用：全アイテムを返す（キャッシュなし）
+export async function getAllAboutForAdmin(): Promise<AboutItem[]> {
+  const res = await notion.databases.query({
+    database_id: ABOUT_DB_ID,
+    sorts: [{ property: 'order', direction: 'ascending' }],
+  })
+
+  return res.results
+    .filter(p => 'properties' in p)
+    .map((page: any) => {
+      const props = page.properties as Record<string, any>
+      return {
+        id: page.id,
+        section: getText(props, 'section'),
+        title: getTitleText(props),
+        sub_label: getText(props, 'sub_label'),
+        body: getText(props, 'body'),
+        url: getText(props, 'url'),
+        order: props.order?.number ?? 99,
+      }
+    })
+}
+
+async function getTitlePropName(): Promise<string> {
+  const db = await notion.databases.retrieve({ database_id: ABOUT_DB_ID }) as any
+  return Object.entries(db.properties as Record<string, any>)
+    .find(([_, prop]) => prop.type === 'title')?.[0] ?? 'Name'
+}
+
+export async function createAboutItem(data: {
+  section: string
+  title: string
+  sub_label?: string
+  body?: string
+  url?: string
+  order?: number
+}): Promise<AboutItem> {
+  const titlePropName = await getTitlePropName()
+  const page = await notion.pages.create({
+    parent: { database_id: ABOUT_DB_ID },
+    properties: {
+      [titlePropName]: { title: [{ text: { content: data.title } }] },
+      section: { rich_text: [{ text: { content: data.section } }] },
+      sub_label: { rich_text: [{ text: { content: data.sub_label ?? '' } }] },
+      body: { rich_text: [{ text: { content: data.body ?? '' } }] },
+      url: { rich_text: [{ text: { content: data.url ?? '' } }] },
+      ...(data.order !== undefined ? { order: { number: data.order } } : {}),
+    },
+  }) as any
+  const props = page.properties as Record<string, any>
+  return {
+    id: page.id,
+    section: data.section,
+    title: data.title,
+    sub_label: data.sub_label ?? '',
+    body: data.body ?? '',
+    url: data.url ?? '',
+    order: data.order ?? 99,
+  }
+}
+
+export async function updateAboutItem(id: string, data: {
+  title?: string
+  sub_label?: string
+  body?: string
+  url?: string
+  order?: number
+}): Promise<void> {
+  const props: Record<string, any> = {}
+  if (data.title !== undefined) {
+    const titlePropName = await getTitlePropName()
+    props[titlePropName] = { title: [{ text: { content: data.title } }] }
+  }
+  if (data.sub_label !== undefined) props.sub_label = { rich_text: [{ text: { content: data.sub_label } }] }
+  if (data.body !== undefined) props.body = { rich_text: [{ text: { content: data.body } }] }
+  if (data.url !== undefined) props.url = { rich_text: [{ text: { content: data.url } }] }
+  if (data.order !== undefined) props.order = { number: data.order }
+  await notion.pages.update({ page_id: id, properties: props })
+}
+
+export async function deleteAboutItem(id: string): Promise<void> {
+  await notion.pages.update({ page_id: id, properties: { archived: true } as any })
+}

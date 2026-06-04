@@ -90,6 +90,7 @@ export default function AdminPage() {
       <header style={s.header}>
         <div style={s.logo}>優.bento Admin</div>
         <div style={s.headerRight}>
+          <Link href="/admin/about" style={{ ...s.newBtn, background: '#fff', color: '#44403c', border: '1px solid #e7e5e4' }}>About管理</Link>
           <Link href="/admin/works" style={{ ...s.newBtn, background: '#fff', color: '#44403c', border: '1px solid #e7e5e4' }}>実績管理</Link>
           <Link href="/admin/proposals/new" style={s.newBtn}>+ 新規作成</Link>
           <button onClick={logout} style={s.logoutBtn}>ログアウト</button>
