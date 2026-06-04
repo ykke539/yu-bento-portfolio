@@ -9,7 +9,7 @@ import { getAboutContent } from '@/lib/notion-about'
 
 export default async function Home() {
   const { process, aboutStats, profile } = await getAboutContent()
-  const introTopItem = profile.find(p => p.title === 'intro_top')
+  const introTopItem = profile.find(p => p.title === 'intro')
   return (
     <main>
       <Hero />
