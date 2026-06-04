@@ -58,6 +58,18 @@ export default function AdminWorksPage() {
       </header>
 
       <main style={s.main}>
+        {/* 画像追加の説明 */}
+        <div style={{ background: '#fef3c7', borderRadius: '8px', border: '1px solid #fde68a', padding: '14px 18px', marginBottom: '20px', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+          <span style={{ fontSize: '14px', flexShrink: 0 }}>📷</span>
+          <div>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: '#92400e', marginBottom: '4px' }}>実績の画像を追加・変更するには</div>
+            <div style={{ fontSize: '12px', color: '#78716c', lineHeight: '1.7' }}>
+              Notionを開く → 該当の実績ページを開く → ページ本文（テキストエリア）に画像をドラッグ＆ドロップ、またはブロックメニュー（/image）から追加。
+              <br />複数枚追加するとカルーセルギャラリーで表示されます。変更後は5分で反映されます。
+            </div>
+          </div>
+        </div>
+
         <div style={s.card}>
           {loading ? (
             <div style={s.empty}>読み込み中...</div>
