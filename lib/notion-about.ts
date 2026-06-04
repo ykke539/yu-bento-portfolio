@@ -39,6 +39,30 @@ export interface ProfileItem {
   order: number
 }
 
+export interface RichTextSpan {
+  text: string
+  color: string  // 'default' | 'gray' | 'brown' | ... Notionのcolor値
+}
+
+export interface PhilosophyItem {
+  id: string
+  section: 'philosophy'
+  title: string          // 問い（q）
+  bodyRich: RichTextSpan[] // 答え（色情報付き）
+  body: string           // 答え（プレーンテキスト）
+  sub_label: string      // 説明文
+  order: number
+}
+
+export interface ProcessItem {
+  id: string
+  section: 'process'
+  title: string      // 英語名（en）
+  sub_label: string  // 日本語名（jp）
+  body: string       // 説明文（desc）
+  order: number
+}
+
 export interface AboutItem {
   id: string
   section: string
@@ -53,6 +77,13 @@ function getText(props: Record<string, any>, key: string): string {
   return props[key]?.rich_text?.map((t: any) => t.plain_text).join('') ?? ''
 }
 
+function getRichText(props: Record<string, any>, key: string): RichTextSpan[] {
+  return (props[key]?.rich_text ?? []).map((t: any) => ({
+    text: t.plain_text,
+    color: t.annotations?.color ?? 'default',
+  }))
+}
+
 function getTitleText(props: Record<string, any>): string {
   const p = Object.values(props).find((p: any) => p.type === 'title') as any
   return p?.title?.[0]?.plain_text ?? ''
@@ -63,6 +94,8 @@ async function fetchAbout(): Promise<{
   misc: MiscLink[]
   skills: SkillItem[]
   profile: ProfileItem[]
+  philosophy: PhilosophyItem[]
+  process: ProcessItem[]
 }> {
   const res = await notion.databases.query({
     database_id: ABOUT_DB_ID,
@@ -73,6 +106,8 @@ async function fetchAbout(): Promise<{
   const misc: MiscLink[] = []
   const skills: SkillItem[] = []
   const profile: ProfileItem[] = []
+  const philosophy: PhilosophyItem[] = []
+  const process: ProcessItem[] = []
 
   for (const page of res.results) {
     if (!('properties' in page)) continue
@@ -115,10 +150,30 @@ async function fetchAbout(): Promise<{
         body: getText(props, 'body'),
         order,
       })
+    } else if (section === 'philosophy') {
+      const bodyRich = getRichText(props, 'body')
+      philosophy.push({
+        id: page.id,
+        section: 'philosophy',
+        title: getTitleText(props),
+        bodyRich,
+        body: bodyRich.map(s => s.text).join(''),
+        sub_label: getText(props, 'sub_label'),
+        order,
+      })
+    } else if (section === 'process') {
+      process.push({
+        id: page.id,
+        section: 'process',
+        title: getTitleText(props),
+        sub_label: getText(props, 'sub_label'),
+        body: getText(props, 'body'),
+        order,
+      })
     }
   }
 
-  return { journey, misc, skills, profile }
+  return { journey, misc, skills, profile, philosophy, process }
 }
 
 export const getAboutContent = unstable_cache(fetchAbout, ['about'], {

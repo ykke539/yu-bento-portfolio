@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
-type Tab = 'journey' | 'misc' | 'skills' | 'profile'
+type Tab = 'journey' | 'misc' | 'skills' | 'profile' | 'philosophy' | 'process'
 
 interface Item {
   id: string
@@ -17,10 +17,12 @@ interface Item {
 }
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: 'journey', label: 'Journey（経歴）' },
-  { id: 'misc', label: 'Misc（リンク）' },
-  { id: 'skills', label: 'Skills（スキル）' },
-  { id: 'profile', label: 'Profile（プロフィール）' },
+  { id: 'journey',    label: 'Journey（経歴）' },
+  { id: 'misc',       label: 'Misc（リンク）' },
+  { id: 'skills',     label: 'Skills（スキル）' },
+  { id: 'profile',    label: 'Profile（プロフィール）' },
+  { id: 'philosophy', label: 'Philosophy（哲学）' },
+  { id: 'process',    label: 'Process（プロセス）' },
 ]
 
 const PROFILE_KEYS = [
@@ -113,6 +115,20 @@ function ItemRow({ item, tab, onUpdated, onDeleted }: { item: Item; tab: Tab; on
               <div style={{ fontSize: '14px', color: '#111110', whiteSpace: 'pre-line' }}>{item.body.slice(0, 100)}{item.body.length > 100 ? '...' : ''}</div>
             </>
           )}
+          {tab === 'philosophy' && (
+            <>
+              <div style={{ fontSize: '10px', color: '#a8a29e', marginBottom: '2px' }}>{item.title}</div>
+              <div style={{ fontSize: '15px', fontWeight: 500, color: '#111110' }}>{item.body}</div>
+              {item.sub_label && <div style={{ fontSize: '12px', color: '#78716c', marginTop: '3px' }}>{item.sub_label.slice(0, 60)}{item.sub_label.length > 60 ? '...' : ''}</div>}
+            </>
+          )}
+          {tab === 'process' && (
+            <>
+              <div style={{ fontSize: '10px', color: '#a8a29e', marginBottom: '2px' }}>— {String(item.order).padStart(2, '0')} {item.sub_label}</div>
+              <div style={{ fontSize: '15px', fontWeight: 500, color: '#111110' }}>{item.title}</div>
+              {item.body && <div style={{ fontSize: '12px', color: '#78716c', marginTop: '3px' }}>{item.body.slice(0, 60)}{item.body.length > 60 ? '...' : ''}</div>}
+            </>
+          )}
         </div>
         <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start', paddingTop: '2px' }}>
           <button style={s.editBtn} onClick={() => setEditing(true)}>編集</button>
@@ -190,6 +206,41 @@ function ItemRow({ item, tab, onUpdated, onDeleted }: { item: Item; tab: Tab; on
             </div>
           </>
         )}
+        {/* Philosophy */}
+        {tab === 'philosophy' && (
+          <>
+            <div>
+              <div style={s.label}>問い（title）</div>
+              <input style={s.input} value={f.title} onChange={e => setF(p => ({ ...p, title: e.target.value }))} placeholder="なぜAIを使うのか" />
+            </div>
+            <div>
+              <div style={s.label}>答え（body）</div>
+              <textarea style={{ ...s.textarea, minHeight: '60px' }} value={f.body} onChange={e => setF(p => ({ ...p, body: e.target.value }))} placeholder="速さのためではない。&#10;本質に集中するため。" />
+              <div style={s.hint}>Notionで文字を灰色などに色付けすると、表示時に強調色になります</div>
+            </div>
+            <div>
+              <div style={s.label}>説明文（sub_label）</div>
+              <textarea style={s.textarea} value={f.sub_label} onChange={e => setF(p => ({ ...p, sub_label: e.target.value }))} placeholder="AIは実装の道具ではなく..." />
+            </div>
+          </>
+        )}
+        {/* Process */}
+        {tab === 'process' && (
+          <>
+            <div>
+              <div style={s.label}>英語名（title）</div>
+              <input style={s.input} value={f.title} onChange={e => setF(p => ({ ...p, title: e.target.value }))} placeholder="Observe" />
+            </div>
+            <div>
+              <div style={s.label}>日本語名（sub_label）</div>
+              <input style={s.input} value={f.sub_label} onChange={e => setF(p => ({ ...p, sub_label: e.target.value }))} placeholder="観察する" />
+            </div>
+            <div>
+              <div style={s.label}>説明文（body）</div>
+              <textarea style={s.textarea} value={f.body} onChange={e => setF(p => ({ ...p, body: e.target.value }))} placeholder="何を作るかより先に..." />
+            </div>
+          </>
+        )}
         <div>
           <div style={s.label}>表示順（order）</div>
           <input style={{ ...s.input, width: '80px' }} type="number" value={f.order} onChange={e => setF(p => ({ ...p, order: e.target.value }))} />
@@ -251,6 +302,24 @@ function NewItemRow({ tab, onCreated, onCancel }: { tab: Tab; onCreated: () => v
               <div style={s.hint}>catch_copy=キャッチコピー, intro=自己紹介文, Base/Available/Type=ステータス欄</div>
             </div>
             <div><div style={s.label}>値（body）</div><textarea style={s.textarea} value={f.body} onChange={e => setF(p => ({ ...p, body: e.target.value }))} /></div>
+          </>
+        )}
+        {tab === 'philosophy' && (
+          <>
+            <div><div style={s.label}>問い（title）<span style={{ color: '#dc2626' }}> *</span></div><input style={s.input} value={f.title} onChange={e => setF(p => ({ ...p, title: e.target.value }))} placeholder="なぜAIを使うのか" /></div>
+            <div>
+              <div style={s.label}>答え（body）</div>
+              <textarea style={{ ...s.textarea, minHeight: '60px' }} value={f.body} onChange={e => setF(p => ({ ...p, body: e.target.value }))} placeholder="速さのためではない。&#10;本質に集中するため。" />
+              <div style={s.hint}>Notionで文字を灰色などに色付けすると、表示時に強調色になります</div>
+            </div>
+            <div><div style={s.label}>説明文（sub_label）</div><textarea style={s.textarea} value={f.sub_label} onChange={e => setF(p => ({ ...p, sub_label: e.target.value }))} placeholder="AIは実装の道具ではなく..." /></div>
+          </>
+        )}
+        {tab === 'process' && (
+          <>
+            <div><div style={s.label}>英語名（title）<span style={{ color: '#dc2626' }}> *</span></div><input style={s.input} value={f.title} onChange={e => setF(p => ({ ...p, title: e.target.value }))} placeholder="Observe" /></div>
+            <div><div style={s.label}>日本語名（sub_label）</div><input style={s.input} value={f.sub_label} onChange={e => setF(p => ({ ...p, sub_label: e.target.value }))} placeholder="観察する" /></div>
+            <div><div style={s.label}>説明文（body）</div><textarea style={s.textarea} value={f.body} onChange={e => setF(p => ({ ...p, body: e.target.value }))} placeholder="何を作るかより先に..." /></div>
           </>
         )}
         <div><div style={s.label}>表示順</div><input style={{ ...s.input, width: '80px' }} type="number" value={f.order} onChange={e => setF(p => ({ ...p, order: e.target.value }))} placeholder="99" /></div>

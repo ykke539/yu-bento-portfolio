@@ -5,14 +5,16 @@ import Process from '@/components/Process'
 import AboutSection from '@/components/AboutSection'
 import Contact from '@/components/Contact'
 import Footer from '@/components/Footer'
+import { getAboutContent } from '@/lib/notion-about'
 
-export default function Home() {
+export default async function Home() {
+  const { process } = await getAboutContent()
   return (
     <main>
       <Hero />
       <Philosophy />
       <WorksPreview />
-      <Process />
+      <Process steps={process} />
       <AboutSection />
       <Contact />
       <Footer />
