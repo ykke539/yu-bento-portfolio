@@ -8,14 +8,15 @@ import Footer from '@/components/Footer'
 import { getAboutContent } from '@/lib/notion-about'
 
 export default async function Home() {
-  const { process } = await getAboutContent()
+  const { process, aboutStats, profile } = await getAboutContent()
+  const introTopItem = profile.find(p => p.title === 'intro_top')
   return (
     <main>
       <Hero />
       <Philosophy />
       <WorksPreview />
       <Process steps={process} />
-      <AboutSection />
+      <AboutSection rows={aboutStats} introRich={introTopItem?.bodyRich} />
       <Contact />
       <Footer />
     </main>

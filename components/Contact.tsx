@@ -55,7 +55,7 @@ export default function Contact() {
           <SectionReveal>
             <h2 className="leading-none mb-10 md:mb-12" style={{ fontFamily: 'var(--font-shippori)', fontSize: 'clamp(48px, 8vw, 120px)', fontWeight: 400, color: 'var(--color-ink)' }}>
               <span className="block mb-4" style={{ fontFamily: 'var(--font-dm-mono)', fontSize: '13px', color: 'var(--color-taupe)', letterSpacing: '0.1em' }}>Contact</span>
-              話しましょう
+              お聞かせください
             </h2>
           </SectionReveal>
           <SectionReveal delay={0.1}>
@@ -67,21 +67,23 @@ export default function Contact() {
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="no-underline flex items-center justify-between py-3 px-0 text-[11px] tracking-[0.1em] uppercase transition-all duration-200 group"
+                  className="no-underline flex items-center justify-between py-3 px-3 text-[11px] tracking-[0.1em] uppercase transition-all duration-200"
                   style={{
                     fontFamily: 'var(--font-dm-mono)',
                     color: 'var(--color-muted)',
                     borderBottom: '1px solid var(--color-border)',
+                    marginLeft: '-12px',
+                    marginRight: '-12px',
                   }}
                   onMouseEnter={e => {
                     const el = e.currentTarget as HTMLElement
                     el.style.color = 'var(--color-accent)'
-                    el.style.paddingLeft = '8px'
+                    el.style.background = 'var(--color-surface)'
                   }}
                   onMouseLeave={e => {
                     const el = e.currentTarget as HTMLElement
                     el.style.color = 'var(--color-muted)'
-                    el.style.paddingLeft = '0'
+                    el.style.background = 'transparent'
                   }}
                 >
                   {label}
@@ -128,7 +130,7 @@ export default function Contact() {
               <button
                 type="submit"
                 disabled={!isValid || status === 'sending'}
-                className="self-start transition-all duration-300"
+                className="self-start transition-all duration-200"
                 style={{
                   fontFamily: 'var(--font-dm-mono)',
                   fontSize: '12px',
@@ -136,11 +138,21 @@ export default function Contact() {
                   textTransform: 'uppercase',
                   padding: '16px 36px',
                   cursor: isValid ? 'pointer' : 'not-allowed',
-                  // 未入力時はグレーアウト
-                  background: isValid ? 'var(--color-ink)' : 'var(--color-border)',
-                  color: isValid ? 'var(--color-bg)' : 'var(--color-muted)',
-                  border: 'none',
+                  background: 'transparent',
+                  color: isValid ? 'var(--color-ink)' : 'var(--color-muted)',
+                  border: `1px solid ${isValid ? 'var(--color-ink)' : 'var(--color-border)'}`,
                   opacity: status === 'sending' ? 0.6 : 1,
+                }}
+                onMouseEnter={e => {
+                  if (!isValid || status === 'sending') return
+                  const el = e.currentTarget as HTMLElement
+                  el.style.background = 'var(--color-ink)'
+                  el.style.color = 'var(--color-bg)'
+                }}
+                onMouseLeave={e => {
+                  const el = e.currentTarget as HTMLElement
+                  el.style.background = 'transparent'
+                  el.style.color = isValid ? 'var(--color-ink)' : 'var(--color-muted)'
                 }}
               >
                 {status === 'sending' ? 'Sending...' : 'Send Message →'}

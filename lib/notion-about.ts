@@ -34,7 +34,16 @@ export interface SkillItem {
 export interface ProfileItem {
   id: string
   section: 'profile'
-  title: string  // キー（catch_copy / intro / Base / Available / Type）
+  title: string          // キー（catch_copy / intro / intro_top / Base / Available / Type）
+  body: string           // 値（プレーンテキスト）
+  bodyRich: RichTextSpan[] // rich_text（強調色対応）
+  order: number
+}
+
+export interface AboutStatItem {
+  id: string
+  section: 'about_stats'
+  title: string  // キー名（Role / Focus / Stack / Belief）
   body: string   // 値
   order: number
 }
@@ -96,6 +105,7 @@ async function fetchAbout(): Promise<{
   profile: ProfileItem[]
   philosophy: PhilosophyItem[]
   process: ProcessItem[]
+  aboutStats: AboutStatItem[]
 }> {
   const res = await notion.databases.query({
     database_id: ABOUT_DB_ID,
@@ -108,6 +118,7 @@ async function fetchAbout(): Promise<{
   const profile: ProfileItem[] = []
   const philosophy: PhilosophyItem[] = []
   const process: ProcessItem[] = []
+  const aboutStats: AboutStatItem[] = []
 
   for (const page of res.results) {
     if (!('properties' in page)) continue
@@ -143,11 +154,13 @@ async function fetchAbout(): Promise<{
         order,
       })
     } else if (section === 'profile') {
+      const bodyRich = getRichText(props, 'body')
       profile.push({
         id: page.id,
         section: 'profile',
         title: getTitleText(props),
-        body: getText(props, 'body'),
+        body: bodyRich.map(s => s.text).join(''),
+        bodyRich,
         order,
       })
     } else if (section === 'philosophy') {
@@ -170,10 +183,18 @@ async function fetchAbout(): Promise<{
         body: getText(props, 'body'),
         order,
       })
+    } else if (section === 'about_stats') {
+      aboutStats.push({
+        id: page.id,
+        section: 'about_stats',
+        title: getTitleText(props),
+        body: getText(props, 'body'),
+        order,
+      })
     }
   }
 
-  return { journey, misc, skills, profile, philosophy, process }
+  return { journey, misc, skills, profile, philosophy, process, aboutStats }
 }
 
 export const getAboutContent = unstable_cache(fetchAbout, ['about'], {
