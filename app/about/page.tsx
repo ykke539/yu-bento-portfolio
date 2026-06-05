@@ -156,7 +156,7 @@ export default async function AboutPage() {
             {skills.map((group, gi) => (
               <div
                 key={group.group}
-                className={['py-10 border-t', gi === 1 ? 'md:px-10 md:border-l' : '', gi === 2 ? 'md:pl-10 md:border-l' : ''].join(' ')}
+                className={['py-10 border-t', gi === 0 ? 'md:pr-16' : '', gi === 1 ? 'md:px-10 md:border-l' : '', gi === 2 ? 'md:pl-10 md:border-l' : ''].join(' ')}
                 style={{ borderColor: 'var(--color-border)' }}
               >
                 <div className="mb-6 text-[10px] tracking-[0.15em] uppercase" style={{ ...monoStyle, color: 'var(--color-taupe)' }}>
