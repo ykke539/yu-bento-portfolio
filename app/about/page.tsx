@@ -27,7 +27,7 @@ export default async function AboutPage() {
 
   const catchCopy = profileMap['catch_copy'] || 'AI Native Product Designer × Design Engineer'
   const intro = profileMap['intro'] || 'エンジニアとして実装し、\nデザイナーとして設計し、\n思考する実装者として最後まで持っていく。\n\n「ちゃんと整う」を、一人称で担える人間でいたい。'
-  const avatar = profileMap['avatar'] || null
+  const avatar = profileMap['avatar'] || '/logo-yu.svg'
   const statusItems = ['Base', 'Available', 'Type']
     .map(k => ({ key: k, val: profileMap[k] }))
     .filter(i => i.val)
@@ -53,7 +53,7 @@ export default async function AboutPage() {
                 style={{ ...monoStyle, fontSize: '11px', color: 'var(--color-muted)', letterSpacing: '0.15em', background: 'rgba(234,231,227,0.85)' }}
               >
                 portrait photo<br />
-                管理画面 Profile &gt; avatar にURLを設定<br />
+                管理画面 Profile › avatar にURLを設定<br />
                 推奨: 縦長, 自然光
               </div>
             </div>
