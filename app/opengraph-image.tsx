@@ -9,7 +9,6 @@ export default async function OgImage() {
   const m = Object.fromEntries(profile.map(p => [p.title, p.body]))
 
   const catchCopy = m['catch_copy'] || 'AI Native Product Designer × Design Engineer'
-  const name = '優.bento'
 
   return new ImageResponse(
     (
@@ -24,23 +23,17 @@ export default async function OgImage() {
           justifyContent: 'flex-end',
           padding: '80px',
           fontFamily: 'sans-serif',
+          position: 'relative',
         }}
       >
-        {/* 装飾ライン */}
-        <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: '#8B2E2E' }} />
-
-        {/* ロゴ */}
-        <div style={{ fontSize: '15px', color: '#9e9088', letterSpacing: '0.2em', marginBottom: '28px' }}>
-          {name}
+        <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: '#8B2E2E', display: 'flex' }} />
+        <div style={{ display: 'flex', fontSize: '15px', color: '#9e9088', letterSpacing: '0.2em', marginBottom: '28px' }}>
+          優.bento
         </div>
-
-        {/* キャッチコピー */}
-        <div style={{ fontSize: '52px', fontWeight: 500, color: '#111110', lineHeight: 1.3, maxWidth: '900px' }}>
+        <div style={{ display: 'flex', fontSize: '52px', fontWeight: 500, color: '#111110', lineHeight: 1.3, maxWidth: '900px' }}>
           {catchCopy}
         </div>
-
-        {/* URL */}
-        <div style={{ fontSize: '14px', color: '#b5afa9', marginTop: '32px', letterSpacing: '0.05em' }}>
+        <div style={{ display: 'flex', fontSize: '14px', color: '#b5afa9', marginTop: '32px', letterSpacing: '0.05em' }}>
           yu-bento-portfolio.vercel.app
         </div>
       </div>

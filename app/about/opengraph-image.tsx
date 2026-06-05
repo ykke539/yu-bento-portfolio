@@ -9,7 +9,7 @@ export default async function OgImage() {
   const m = Object.fromEntries(profile.map(p => [p.title, p.body]))
 
   const catchCopy = m['catch_copy'] || 'AI Native Product Designer × Design Engineer'
-  const intro = (m['intro'] || '').split('\n').join(' ')
+  const intro = (m['intro'] || '').replace(/\n/g, ' ')
 
   return new ImageResponse(
     (
@@ -24,17 +24,17 @@ export default async function OgImage() {
           justifyContent: 'flex-end',
           padding: '80px',
           fontFamily: 'sans-serif',
+          position: 'relative',
         }}
       >
-        <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: '#8B2E2E' }} />
-
-        <div style={{ fontSize: '13px', color: '#9e9088', letterSpacing: '0.2em', marginBottom: '16px' }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: '#8B2E2E', display: 'flex' }} />
+        <div style={{ display: 'flex', fontSize: '13px', color: '#9e9088', letterSpacing: '0.2em', marginBottom: '16px' }}>
           優.bento — About
         </div>
-        <div style={{ fontSize: '48px', fontWeight: 500, color: '#111110', lineHeight: 1.3, maxWidth: '900px', marginBottom: '24px' }}>
+        <div style={{ display: 'flex', fontSize: '48px', fontWeight: 500, color: '#111110', lineHeight: 1.3, maxWidth: '900px', marginBottom: '24px' }}>
           {catchCopy}
         </div>
-        <div style={{ fontSize: '18px', color: '#7a6f64', maxWidth: '800px', lineHeight: 1.7 }}>
+        <div style={{ display: 'flex', fontSize: '18px', color: '#7a6f64', maxWidth: '800px', lineHeight: 1.7 }}>
           {intro.slice(0, 80)}{intro.length > 80 ? '...' : ''}
         </div>
       </div>
