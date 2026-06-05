@@ -27,7 +27,7 @@ export default async function AboutPage() {
 
   const catchCopy = profileMap['catch_copy'] || 'AI Native Product Designer × Design Engineer'
   const intro = profileMap['intro'] || 'エンジニアとして実装し、\nデザイナーとして設計し、\n思考する実装者として最後まで持っていく。\n\n「ちゃんと整う」を、一人称で担える人間でいたい。'
-  const avatar = profileMap['avatar'] || '/logo-yu.svg'
+  const avatar = profileMap['avatar'] || null
   const statusItems = ['Base', 'Available', 'Type']
     .map(k => ({ key: k, val: profileMap[k] }))
     .filter(i => i.val)
