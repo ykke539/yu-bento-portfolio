@@ -164,7 +164,17 @@ function EditFields({ tab, f, setF }: { tab: SectionTab; f: any; setF: any }) {
         <div><div style={s.label}>値（改行可）</div><textarea style={s.textarea} value={f.body} onChange={e => setF((p: any) => ({ ...p, body: e.target.value }))} placeholder={'AI Native Product Designer\nDesign Engineer'} /></div>
       </>)}
       {tab === 'works_capability' && (<>
-        <div><div style={s.label}>カテゴリ名</div><input style={s.input} value={f.title} onChange={e => setF((p: any) => ({ ...p, title: e.target.value }))} placeholder="Web Application" /></div>
+        <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: '10px' }}>
+          <div>
+            <div style={s.label}>ラベル（上部小文字）</div>
+            <input style={s.input} value={f.url} onChange={e => setF((p: any) => ({ ...p, url: e.target.value }))} placeholder="001 / App / etc." />
+            <div style={s.hint}>空欄で自動採番</div>
+          </div>
+          <div>
+            <div style={s.label}>カテゴリ名</div>
+            <input style={s.input} value={f.title} onChange={e => setF((p: any) => ({ ...p, title: e.target.value }))} placeholder="Web Application" />
+          </div>
+        </div>
         <div>
           <div style={s.label}>タグ（sub_label）</div>
           <input style={s.input} value={f.sub_label} onChange={e => setF((p: any) => ({ ...p, sub_label: e.target.value }))} placeholder="UX Design, Frontend, Next.js" />

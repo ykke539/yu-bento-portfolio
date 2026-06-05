@@ -76,6 +76,7 @@ export interface WorksCapabilityItem {
   id: string
   section: 'works_capability'
   title: string      // カテゴリ名（Web Application 等）
+  num: string        // 表示番号（001 等）未設定なら order から自動生成
   sub_label: string  // タグ（カンマ区切り）
   body: string       // 説明文
   order: number
@@ -207,6 +208,7 @@ async function fetchAbout(): Promise<{
         id: page.id,
         section: 'works_capability',
         title: getTitleText(props),
+        num: getText(props, 'url'),   // urlフィールドを番号として流用
         sub_label: getText(props, 'sub_label'),
         body: getText(props, 'body'),
         order,
