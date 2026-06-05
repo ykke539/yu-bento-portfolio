@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import SectionReveal from './SectionReveal'
+import { SnsIcon } from './SnsIcon'
 
 const SNS = [
   { label: 'X (Twitter)',  href: 'https://x.com/bento59174' },
@@ -86,7 +87,10 @@ export default function Contact() {
                     el.style.background = 'transparent'
                   }}
                 >
-                  {label}
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <SnsIcon name={label} size={13} />
+                    {label}
+                  </span>
                   <span style={{ fontSize: '10px', opacity: 0.6 }}>↗</span>
                 </a>
               ))}

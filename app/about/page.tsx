@@ -1,5 +1,6 @@
 import Footer from '@/components/Footer'
 import { getAboutContent, type SkillItem } from '@/lib/notion-about'
+import { SnsIcon } from '@/components/SnsIcon'
 
 export const metadata = {
   title: 'About — 優.bento',
@@ -200,9 +201,10 @@ export default async function AboutPage() {
                   style={{ borderBottom: '1px solid var(--color-border)' }}
                 >
                   <span
-                    className="text-[10px] tracking-[0.1em] uppercase"
+                    className="flex items-center gap-2 text-[10px] tracking-[0.1em] uppercase"
                     style={{ ...monoStyle, color: 'var(--color-muted)', minWidth: '72px' }}
                   >
+                    <SnsIcon name={link.sub_label || link.name} size={12} />
                     {link.sub_label}
                   </span>
                   <span
