@@ -72,6 +72,15 @@ export interface ProcessItem {
   order: number
 }
 
+export interface WorksCapabilityItem {
+  id: string
+  section: 'works_capability'
+  title: string      // カテゴリ名（Web Application 等）
+  sub_label: string  // タグ（カンマ区切り）
+  body: string       // 説明文
+  order: number
+}
+
 export interface AboutItem {
   id: string
   section: string
@@ -106,6 +115,7 @@ async function fetchAbout(): Promise<{
   philosophy: PhilosophyItem[]
   process: ProcessItem[]
   aboutStats: AboutStatItem[]
+  worksCapability: WorksCapabilityItem[]
 }> {
   const res = await notion.databases.query({
     database_id: ABOUT_DB_ID,
@@ -119,6 +129,7 @@ async function fetchAbout(): Promise<{
   const philosophy: PhilosophyItem[] = []
   const process: ProcessItem[] = []
   const aboutStats: AboutStatItem[] = []
+  const worksCapability: WorksCapabilityItem[] = []
 
   for (const page of res.results) {
     if (!('properties' in page)) continue
@@ -191,10 +202,19 @@ async function fetchAbout(): Promise<{
         body: getText(props, 'body'),
         order,
       })
+    } else if (section === 'works_capability') {
+      worksCapability.push({
+        id: page.id,
+        section: 'works_capability',
+        title: getTitleText(props),
+        sub_label: getText(props, 'sub_label'),
+        body: getText(props, 'body'),
+        order,
+      })
     }
   }
 
-  return { journey, misc, skills, profile, philosophy, process, aboutStats }
+  return { journey, misc, skills, profile, philosophy, process, aboutStats, worksCapability }
 }
 
 export const getAboutContent = unstable_cache(fetchAbout, ['about'], {

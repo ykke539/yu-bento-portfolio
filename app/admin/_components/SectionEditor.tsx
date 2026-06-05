@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
-export type SectionTab = 'journey' | 'misc' | 'skills' | 'profile' | 'philosophy' | 'process' | 'about_stats'
+export type SectionTab = 'journey' | 'misc' | 'skills' | 'profile' | 'philosophy' | 'process' | 'about_stats' | 'works_capability'
 
 export interface TabDef {
   id: SectionTab
@@ -105,6 +105,11 @@ function ItemDisplay({ item, tab }: { item: Item; tab: SectionTab }) {
         <div style={{ fontSize: '10px', color: '#a8a29e', marginBottom: '2px' }}>{item.title}</div>
         <div style={{ fontSize: '14px', color: '#111110', whiteSpace: 'pre-line' }}>{item.body.slice(0, 80)}{item.body.length > 80 ? '...' : ''}</div>
       </>)}
+      {tab === 'works_capability' && (<>
+        <div style={{ fontSize: '10px', color: '#a8a29e', marginBottom: '2px' }}>{item.sub_label}</div>
+        <div style={{ fontSize: '15px', fontWeight: 500, color: '#111110' }}>{item.title}</div>
+        {item.body && <div style={{ fontSize: '12px', color: '#78716c', marginTop: '3px' }}>{item.body.slice(0, 60)}{item.body.length > 60 ? '...' : ''}</div>}
+      </>)}
     </div>
   )
 }
@@ -157,6 +162,15 @@ function EditFields({ tab, f, setF }: { tab: SectionTab; f: any; setF: any }) {
           <div style={s.hint}>TOPページのAboutセクション右カラムに表示されます</div>
         </div>
         <div><div style={s.label}>値（改行可）</div><textarea style={s.textarea} value={f.body} onChange={e => setF((p: any) => ({ ...p, body: e.target.value }))} placeholder={'AI Native Product Designer\nDesign Engineer'} /></div>
+      </>)}
+      {tab === 'works_capability' && (<>
+        <div><div style={s.label}>カテゴリ名</div><input style={s.input} value={f.title} onChange={e => setF((p: any) => ({ ...p, title: e.target.value }))} placeholder="Web Application" /></div>
+        <div>
+          <div style={s.label}>タグ（sub_label）</div>
+          <input style={s.input} value={f.sub_label} onChange={e => setF((p: any) => ({ ...p, sub_label: e.target.value }))} placeholder="UX Design, Frontend, Next.js" />
+          <div style={s.hint}>カンマ区切りで複数入力可能</div>
+        </div>
+        <div><div style={s.label}>説明文</div><textarea style={s.textarea} value={f.body} onChange={e => setF((p: any) => ({ ...p, body: e.target.value }))} placeholder="設計から実装まで一貫して担当。" /></div>
       </>)}
       <div><div style={s.label}>表示順</div><input style={{ ...s.input, width: '80px' }} type="number" value={f.order} onChange={e => setF((p: any) => ({ ...p, order: e.target.value }))} /></div>
     </>

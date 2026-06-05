@@ -18,6 +18,11 @@ const TABS: TabDef[] = [
     label: 'About欄（スタッツ）',
     info: 'TOPページのAboutセクション右カラムに表示されるKey-Valueテーブルです。Role / Focus / Stack / Belief などのキーと値のペアを管理します。値は改行対応です（Enterで改行）。',
   },
+  {
+    id: 'works_capability',
+    label: 'Works（できること）',
+    info: 'TOPページのWorksセクションに表示される6つのカテゴリカードです。カテゴリ名・タグ（カンマ区切り）・説明文の3フィールドで1件を構成します。表示順（order）で並び順を制御します。',
+  },
 ]
 
 export default function AdminTopPage() {
