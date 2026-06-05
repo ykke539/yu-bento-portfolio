@@ -27,6 +27,7 @@ export default async function AboutPage() {
 
   const catchCopy = profileMap['catch_copy'] || 'AI Native Product Designer × Design Engineer'
   const intro = profileMap['intro'] || 'エンジニアとして実装し、\nデザイナーとして設計し、\n思考する実装者として最後まで持っていく。\n\n「ちゃんと整う」を、一人称で担える人間でいたい。'
+  const avatar = profileMap['avatar'] || null
   const statusItems = ['Base', 'Available', 'Type']
     .map(k => ({ key: k, val: profileMap[k] }))
     .filter(i => i.val)
@@ -40,27 +41,23 @@ export default async function AboutPage() {
           className="relative flex items-end p-14 overflow-hidden"
           style={{ background: '#eae7e3', minHeight: '560px' }}
         >
-          <div
-            className="absolute inset-0 flex items-center justify-center"
-            style={{
-              background: 'repeating-linear-gradient(-45deg, #dedad5, #dedad5 1px, #eae7e3 1px, #eae7e3 14px)',
-            }}
-          >
+          {avatar ? (
+            <div className="absolute inset-0" style={{ backgroundImage: `url(${avatar})`, backgroundSize: 'cover', backgroundPosition: 'center top' }} />
+          ) : (
             <div
-              className="text-center leading-[2.2] px-8 py-5"
-              style={{
-                ...monoStyle,
-                fontSize: '11px',
-                color: 'var(--color-muted)',
-                letterSpacing: '0.15em',
-                background: 'rgba(234,231,227,0.85)',
-              }}
+              className="absolute inset-0 flex items-center justify-center"
+              style={{ background: 'repeating-linear-gradient(-45deg, #dedad5, #dedad5 1px, #eae7e3 1px, #eae7e3 14px)' }}
             >
-              portrait photo<br />
-              差し替え用プレースホルダー<br />
-              推奨: 縦長, 自然光
+              <div
+                className="text-center leading-[2.2] px-8 py-5"
+                style={{ ...monoStyle, fontSize: '11px', color: 'var(--color-muted)', letterSpacing: '0.15em', background: 'rgba(234,231,227,0.85)' }}
+              >
+                portrait photo<br />
+                管理画面 Profile &gt; avatar にURLを設定<br />
+                推奨: 縦長, 自然光
+              </div>
             </div>
-          </div>
+          )}
           <div
             className="relative z-10 leading-[2]"
             style={{ ...monoStyle, fontSize: '10px', color: 'var(--color-taupe)', letterSpacing: '0.1em' }}

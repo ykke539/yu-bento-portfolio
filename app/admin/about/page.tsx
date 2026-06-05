@@ -20,8 +20,8 @@ const TABS: TabDef[] = [
   {
     id: 'profile',
     label: 'Profile（プロフィール）',
-    info: 'Aboutページのヒーローエリアと、TOPページのAboutセクション左カラムに使われるプロフィール情報です。',
-    notionRequired: 'intro_top（TOPの自己紹介文）の強調テキストはNotionで設定が必要です。Notionを開き「body」フィールドの強調したい文字を選択して灰色などの色を付けてください。変更後5分で反映されます。',
+    info: 'Aboutページのヒーローエリアと、TOPページのAboutセクション左カラムに使われるプロフィール情報です。\n\nキー一覧：catch_copy（キャッチコピー）／intro（自己紹介文・TOPとAbout共通）／Base・Available・Type（ステータス）／og_image（SNSシェア用OGP画像URL・1200×630 横長）／avatar（プロフィール顔写真URL・正方形推奨、Aboutページと管理画面アイコンに使用）',
+    notionRequired: 'intro の強調テキスト（色付き）はNotionで設定が必要です。body フィールドで強調したい文字を選択して灰色などの色を付けてください。\nog_image・avatar の画像は、Imgurやドライブなど外部ホスティングのURLを使用してください（Notionにアップした画像は1時間で期限切れになります）。',
   },
 ]
 
