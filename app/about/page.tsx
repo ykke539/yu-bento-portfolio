@@ -28,7 +28,7 @@ export default async function AboutPage() {
 
   const catchCopy = profileMap['catch_copy'] || 'AI Native Product Designer × Design Engineer'
   const intro = profileMap['intro'] || 'エンジニアとして実装し、\nデザイナーとして設計し、\n思考する実装者として最後まで持っていく。\n\n「ちゃんと整う」を、一人称で担える人間でいたい。'
-  const avatar = profileMap['avatar'] || null
+  const avatar = profileMap['avatar'] || '/avatar.png'
   const statusItems = ['Base', 'Available', 'Type']
     .map(k => ({ key: k, val: profileMap[k] }))
     .filter(i => i.val)
@@ -43,7 +43,8 @@ export default async function AboutPage() {
           style={{ background: '#eae7e3', minHeight: '560px' }}
         >
           {avatar ? (
-            <div className="absolute inset-0" style={{ backgroundImage: `url(${avatar})`, backgroundSize: 'cover', backgroundPosition: 'center top' }} />
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={avatar} alt="portrait" className="absolute inset-0 w-full h-full object-cover object-top" />
           ) : (
             <div
               className="absolute inset-0 flex items-center justify-center"
