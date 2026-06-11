@@ -7,7 +7,7 @@ import Link from 'next/link'
 interface WorkOption { id: string; slug: string; title: string; cat: string }
 
 export default function NewProposalPage() {
-  const [form, setForm] = useState({ clientName: '', proposalText: '', selectedWorks: [] as string[], memo: '' })
+  const [form, setForm] = useState({ clientName: '', proposalText: '', selectedWorks: [] as string[], memo: '', htmlUrl: '' })
   const [works, setWorks] = useState<WorkOption[]>([])
   const [status, setStatus] = useState<'idle' | 'submitting' | 'done' | 'error'>('idle')
   const [createdSlug, setCreatedSlug] = useState('')
@@ -115,11 +115,11 @@ export default function NewProposalPage() {
           </div>
 
           <div>
-            <label style={s.label}>提案文 <span style={{ color: '#dc2626' }}>*</span></label>
-            <textarea required value={form.proposalText}
+            <label style={s.label}>提案文{!form.htmlUrl && <span style={{ color: '#dc2626' }}> *</span>}</label>
+            <textarea required={!form.htmlUrl} value={form.proposalText}
               onChange={e => setForm({ ...form, proposalText: e.target.value })}
               style={s.textarea} placeholder={'例：\n〇〇様のプロジェクトに向けて、\n私がこれまで担当してきた実績と\nアプローチをご紹介します。'} />
-            <div style={s.hint}>ページ最上部に大きく表示されます</div>
+            <div style={s.hint}>ページ最上部に大きく表示されます（静的HTMLファイルパスを指定する場合は不要）</div>
           </div>
 
           <div>
@@ -127,6 +127,17 @@ export default function NewProposalPage() {
             <input type="text" value={form.memo}
               onChange={e => setForm({ ...form, memo: e.target.value })}
               style={s.input} placeholder="提案先・経緯・メモ等" />
+          </div>
+
+          <div style={{ paddingTop: '8px', borderTop: '1px solid #f5f5f4' }}>
+            <label style={s.label}>静的HTMLファイルパス（任意）</label>
+            <input type="text" value={form.htmlUrl}
+              onChange={e => setForm({ ...form, htmlUrl: e.target.value })}
+              style={s.input} placeholder="/proposals/example.html" />
+            <div style={s.hint}>
+              public/proposals/ にHTMLファイルを配置した場合のパスを指定すると、
+              /proposal/&#123;slug&#125; へのアクセス時にそのファイルへ自動転送されます（提案文・実績は使用されません）
+            </div>
           </div>
 
           <div>
@@ -167,8 +178,8 @@ export default function NewProposalPage() {
           )}
 
           <div style={{ display: 'flex', gap: '12px' }}>
-            <button type="submit" disabled={status === 'submitting' || !form.clientName || !form.proposalText}
-              style={{ ...s.submitBtn, opacity: status === 'submitting' || !form.clientName || !form.proposalText ? 0.5 : 1 }}>
+            <button type="submit" disabled={status === 'submitting' || !form.clientName || !(form.proposalText || form.htmlUrl)}
+              style={{ ...s.submitBtn, opacity: status === 'submitting' || !form.clientName || !(form.proposalText || form.htmlUrl) ? 0.5 : 1 }}>
               {status === 'submitting' ? '作成中...' : '提案ページを作成する'}
             </button>
             <Link href="/admin" style={{ padding: '11px 20px', border: '1px solid #e7e5e4', borderRadius: '6px', fontSize: '14px', textDecoration: 'none', color: '#78716c' }}>

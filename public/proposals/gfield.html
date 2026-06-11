@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ホームページ制作 ご提案 ｜ 株式会社G-field 様</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f4f6fb; font-family: 'Helvetica Neue', 'Hiragino Sans', 'Meiryo', sans-serif; }
+    button { font-family: inherit; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    const BLUE   = "#1A4F8A";
+    const ACCENT = "#E8A020";
+    const GREEN  = "#2A7A50";
+
+    // ── Lucide アイコン（SVGインライン） ──────────────────────────────
+    const Icon = ({ d, size = 16, color = "currentColor", style = {} }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+        stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+        style={{ display: "inline-block", flexShrink: 0, ...style }}>
+        {Array.isArray(d) ? d.map((p, i) => <path key={i} d={p} />) : <path d={d} />}
+      </svg>
+    );
+    const icons = {
+      User:         "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z",
+      MapPin:       "M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z M12 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6z",
+      Building2:    "M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18 M2 22h20 M12 6h.01 M12 10h.01 M12 14h.01 M12 18h.01",
+      Star:         "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z",
+      CalendarDays: "M8 2v4 M16 2v4 M3 10h18 M21 8H3a0 0 0 0 0 0 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8z M8 14h.01 M12 14h.01 M16 14h.01 M8 18h.01 M12 18h.01 M16 18h.01",
+      Megaphone:    "M3 11l19-9-9 19-2-8-8-2z",
+      Scissors:     "M6 3a3 3 0 1 1 0 6 3 3 0 0 1 0-6z M18 21a3 3 0 1 1 0-6 3 3 0 0 1 0 6z M20 4 8.12 15.88 M14.47 14.48 20 20 M8.12 8.12 12 12",
+      Recycle:      "M7 19H4.815a1.83 1.83 0 0 1-1.57-2.763L7.196 9.5 M11 19h8.203a1.83 1.83 0 0 0 1.556-2.752l-4.252-7.534 M18 13l2-5-5 .5 M6.5 9.5 4 14.5l5-.5",
+      Github:       "M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22",
+      Server:       "M2 3h20v6H2z M2 15h20v6H2z M6 9v6 M6 9a1 1 0 0 1 0-6 M6 21a1 1 0 0 1 0-6",
+      Link:         "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71 M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71",
+      CheckCircle2: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M9 12l2 2 4-4",
+      ChevronDown:  "M6 9l6 6 6-6",
+      ArrowRight:   "M5 12h14 M12 5l7 7-7 7",
+    };
+    const LucideIcon = ({ name, size = 16, color = "currentColor", style = {} }) => {
+      const d = icons[name];
+      if (!d) return null;
+      const paths = d.split(" M ").map((p, i) => i === 0 ? p : "M " + p);
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+          stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+          style={{ display: "inline-block", flexShrink: 0, verticalAlign: "middle", ...style }}>
+          {paths.map((p, i) => <path key={i} d={p} />)}
+        </svg>
+      );
+    };
+
+    // ── モックサイトプレビュー ─────────────────────────────────────────
+    function SiteMockup() {
+      const tabs = ["TOP", "ABOUT", "BUSINESS", "CONTACT"];
+      const [active, setActive] = useState("TOP");
+
+      const businessItems = [
+        { icon: "CalendarDays", title: "イベント事業", sub: "筑豊ラーメンフェス・メダカフェス" },
+        { icon: "Megaphone",    title: "SNS事業",     sub: "インフルエンサー育成・マッチング" },
+        { icon: "Scissors",     title: "人材育成",     sub: "筑豊きっとカット運営" },
+        { icon: "Recycle",      title: "リサイクル",   sub: "不用品回収・リサイクル" },
+      ];
+
+      const panels = {
+        TOP: (
+          <div style={{ background: "linear-gradient(135deg,#1A4F8A 0%,#0d2d52 100%)", color: "#fff", padding: "32px 24px", minHeight: 220, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            <div style={{ fontSize: 11, letterSpacing: 2, opacity: 0.7, marginBottom: 8 }}>株式会社G-field</div>
+            <div style={{ fontSize: 22, fontWeight: 700, lineHeight: 1.4, marginBottom: 12 }}>地方に、可能性を。<br />若者に、未来を。</div>
+            <div style={{ fontSize: 11, opacity: 0.8, marginBottom: 20, lineHeight: 1.8 }}>現役オートレーサーが率いる地域創生カンパニー</div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <div style={{ background: ACCENT, color: "#fff", padding: "8px 16px", borderRadius: 4, fontSize: 11, fontWeight: 600 }}>事業内容を見る</div>
+              <div style={{ border: "1px solid rgba(255,255,255,0.4)", color: "#fff", padding: "8px 16px", borderRadius: 4, fontSize: 11 }}>お問い合わせ</div>
+            </div>
+          </div>
+        ),
+        ABOUT: (
+          <div style={{ padding: "24px", minHeight: 220 }}>
+            <div style={{ fontSize: 10, color: ACCENT, fontWeight: 700, letterSpacing: 2, marginBottom: 8 }}>ABOUT</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#1a1a1a", marginBottom: 12 }}>会社について</div>
+            <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+              <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#e8f0fa", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <LucideIcon name="User" size={24} color={BLUE} />
+              </div>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 4, color: "#1a1a1a" }}>代表　永畑 ○○</div>
+                <div style={{ fontSize: 11, color: "#555", lineHeight: 1.7 }}>現役オートレーサーとして活動しながら、地域の可能性を広げるべく起業。イベント・SNS・人材育成など多角的な事業を展開しています。</div>
+              </div>
+            </div>
+            <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+              {[["MapPin","所在地","福岡県"],["Building2","設立","2020年"],["Star","事業数","4分野"]].map(([ic, k, v]) => (
+                <div key={k} style={{ background: "#f5f8ff", borderRadius: 6, padding: "8px", textAlign: "center" }}>
+                  <div style={{ marginBottom: 2 }}><LucideIcon name={ic} size={12} color="#aaa" /></div>
+                  <div style={{ fontSize: 9, color: "#888", marginBottom: 2 }}>{k}</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: BLUE }}>{v}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ),
+        BUSINESS: (
+          <div style={{ padding: "24px", minHeight: 220 }}>
+            <div style={{ fontSize: 10, color: ACCENT, fontWeight: 700, letterSpacing: 2, marginBottom: 8 }}>BUSINESS</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#1a1a1a", marginBottom: 12 }}>事業内容</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              {businessItems.map(({ icon, title, sub }) => (
+                <div key={title} style={{ border: "1px solid #e8eef8", borderRadius: 8, padding: "10px", background: "#fff" }}>
+                  <div style={{ marginBottom: 6 }}><LucideIcon name={icon} size={18} color={BLUE} /></div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#1a1a1a", marginBottom: 2 }}>{title}</div>
+                  <div style={{ fontSize: 9, color: "#888", lineHeight: 1.5 }}>{sub}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ),
+        CONTACT: (
+          <div style={{ padding: "24px", minHeight: 220, background: "#f5f8ff" }}>
+            <div style={{ fontSize: 10, color: ACCENT, fontWeight: 700, letterSpacing: 2, marginBottom: 8 }}>CONTACT</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#1a1a1a", marginBottom: 16 }}>お問い合わせ</div>
+            <div style={{ background: "#fff", borderRadius: 8, padding: "16px", border: "1px solid #e0e8f0" }}>
+              {[["お名前","例：山田 太郎"],["メールアドレス","example@email.com"]].map(([lbl, ph]) => (
+                <div key={lbl} style={{ marginBottom: 10 }}>
+                  <div style={{ fontSize: 10, color: "#888", marginBottom: 4 }}>{lbl}</div>
+                  <div style={{ background: "#f5f5f5", borderRadius: 4, padding: "7px 10px", fontSize: 11, color: "#bbb" }}>{ph}</div>
+                </div>
+              ))}
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ fontSize: 10, color: "#888", marginBottom: 4 }}>お問い合わせ内容</div>
+                <div style={{ background: "#f5f5f5", borderRadius: 4, padding: "7px 10px", fontSize: 11, color: "#bbb", height: 40 }}>ご自由にどうぞ</div>
+              </div>
+              <div style={{ background: BLUE, color: "#fff", padding: "8px", borderRadius: 4, textAlign: "center", fontSize: 11, fontWeight: 600 }}>送信する</div>
+            </div>
+          </div>
+        ),
+      };
+
+      return (
+        <div style={{ border: "1px solid #ddd", borderRadius: 12, overflow: "hidden", boxShadow: "0 4px 20px rgba(0,0,0,0.08)" }}>
+          <div style={{ background: "#f0f0f0", padding: "8px 12px", display: "flex", alignItems: "center", gap: 8, borderBottom: "1px solid #ddd" }}>
+            <div style={{ display: "flex", gap: 5 }}>
+              {["#ff5f57","#febc2e","#28c840"].map(c => <div key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />)}
+            </div>
+            <div style={{ flex: 1, background: "#fff", borderRadius: 6, padding: "3px 10px", fontSize: 10, color: "#888", border: "1px solid #e0e0e0" }}>g-field.jp</div>
+          </div>
+          <div style={{ background: "#fff", borderBottom: "1px solid #e8eef8", display: "flex", padding: "0 12px" }}>
+            {tabs.map(s => (
+              <button key={s} onClick={() => setActive(s)} style={{ padding: "8px 12px", fontSize: 10, fontWeight: active === s ? 700 : 400, color: active === s ? BLUE : "#888", borderBottom: active === s ? `2px solid ${BLUE}` : "2px solid transparent", background: "none", border: "none", cursor: "pointer" }}>
+                {s}
+              </button>
+            ))}
+            <div style={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>
+              <div style={{ background: ACCENT, color: "#fff", padding: "4px 10px", borderRadius: 4, fontSize: 9, fontWeight: 600 }}>お問い合わせ</div>
+            </div>
+          </div>
+          {panels[active]}
+          <div style={{ background: "#1a1a1a", color: "#888", padding: "10px 16px", fontSize: 9, textAlign: "center" }}>
+            © 2026 株式会社G-field　｜　<span style={{ color: "#aaa" }}>プライバシーポリシー</span>
+          </div>
+        </div>
+      );
+    }
+
+    // ── 構成図 ────────────────────────────────────────────────────────
+    function StructureChart() {
+      const sections = [
+        { label: "TOP",      desc: "キャッチコピー・理念・ナビゲーション", color: BLUE },
+        { label: "ABOUT",    desc: "代表メッセージ・会社情報",             color: "#2563a8" },
+        { label: "BUSINESS", desc: "4事業の紹介カード",                   color: GREEN },
+        { label: "NEWS",     desc: "お知らせ・活動報告",                   color: "#5a7a9a" },
+        { label: "CONTACT",  desc: "問い合わせフォーム・SNSリンク",         color: ACCENT },
+      ];
+      return (
+        <div style={{ border: "1px solid #e0e8f0", borderRadius: 10, overflow: "hidden" }}>
+          <div style={{ background: "#f5f8ff", padding: "8px 14px", fontSize: 10, color: "#888", borderBottom: "1px solid #e0e8f0", fontWeight: 600 }}>
+            g-field.jp　（1ページ構成・スクロールで全セクションを表示）
+          </div>
+          {sections.map((s, i) => (
+            <div key={s.label} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: i % 2 === 0 ? "#fff" : "#fafbff", borderBottom: i < sections.length - 1 ? "1px solid #eef2f8" : "none" }}>
+              <div style={{ background: s.color, color: "#fff", borderRadius: 5, padding: "3px 8px", fontSize: 9, fontWeight: 700, minWidth: 64, textAlign: "center" }}>{s.label}</div>
+              <div style={{ fontSize: 11, color: "#444" }}>{s.desc}</div>
+              {i < sections.length - 1 && <div style={{ marginLeft: "auto" }}><LucideIcon name="ChevronDown" size={14} color="#ccc" /></div>}
+            </div>
+          ))}
+          <div style={{ display: "flex", borderTop: "1px solid #e0e8f0" }}>
+            {["プライバシーポリシー","特定商取引法 等"].map((label, i) => (
+              <div key={label} style={{ flex: 1, padding: "8px 14px", background: i === 0 ? "#f8f0ff" : "#fff", borderLeft: i > 0 ? "1px solid #e0e8f0" : "none" }}>
+                <div style={{ fontSize: 9, color: "#999", marginBottom: 2 }}>下層ページ（別ページ）</div>
+                <div style={{ fontSize: 10, color: "#7a6a9a", fontWeight: 600 }}>{label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // ── インフラ構成図 ────────────────────────────────────────────────
+    function InfraChart() {
+      const items = [
+        { icon: "User",   label: "G-field さま",     sub: "GitHubアカウント\nCloudflareアカウント\nドメイン登録",           color: "#e8f0fa", border: BLUE },
+        { icon: "Github", label: "GitHub",           sub: "コード管理\n優.bento をCollaborator招待\n離脱時は招待削除のみ",  color: "#f0f8f0", border: GREEN },
+        { icon: "Server", label: "Cloudflare Pages", sub: "ホスティング（無料）\nGitHub連携で自動デプロイ\nCDN・HTTPS込み", color: "#fff8ec", border: ACCENT },
+        { icon: "Link",   label: "ドメイン",          sub: "Cloudflare Registrar\nDNS管理も同一画面\n年額 約1,500〜2,000円", color: "#fef0f0", border: "#e06060" },
+      ];
+      return (
+        <div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            {items.map(({ icon, label, sub, color, border }) => (
+              <div key={label} style={{ border: `1.5px solid ${border}`, borderRadius: 8, padding: "12px 14px", background: color }}>
+                <div style={{ marginBottom: 6 }}><LucideIcon name={icon} size={20} color={border} /></div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#1a1a1a", marginBottom: 4 }}>{label}</div>
+                <div style={{ fontSize: 10, color: "#555", lineHeight: 1.7, whiteSpace: "pre-line" }}>{sub}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 10, background: "#f5f5f5", borderRadius: 8, padding: "10px 14px", display: "flex", alignItems: "center", gap: 8, fontSize: 10, color: "#666" }}>
+            <LucideIcon name="ArrowRight" size={13} color="#999" />
+            <span><strong style={{ color: "#333" }}>デプロイの流れ：</strong>　優.bento がコードを更新 → GitHub にプッシュ → Cloudflare Pages が自動でサイトを更新（数十秒）</span>
+          </div>
+        </div>
+      );
+    }
+
+    // ── 共通部品 ──────────────────────────────────────────────────────
+    function Section({ title, eyebrow, children }) {
+      return (
+        <div style={{ marginBottom: 40 }}>
+          {eyebrow && <div style={{ fontSize: 10, fontWeight: 700, color: ACCENT, letterSpacing: 2, marginBottom: 6, textTransform: "uppercase" }}>{eyebrow}</div>}
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#111", marginBottom: 16, paddingBottom: 10, borderBottom: `2px solid ${BLUE}` }}>{title}</div>
+          {children}
+        </div>
+      );
+    }
+
+    function Tag({ children, color = BLUE }) {
+      return <span style={{ display: "inline-block", background: color, color: "#fff", borderRadius: 4, padding: "2px 8px", fontSize: 10, fontWeight: 600, marginRight: 4 }}>{children}</span>;
+    }
+
+    function PriceCard({ title, price, sub, note, tag, tagColor, highlight }) {
+      return (
+        <div style={{ border: highlight ? `2px solid ${BLUE}` : "1.5px solid #e0e8f0", borderRadius: 10, padding: "18px 20px", background: highlight ? "#f0f5ff" : "#fff", flex: 1, position: "relative" }}>
+          {highlight && <div style={{ position: "absolute", top: -10, left: 16, background: BLUE, color: "#fff", fontSize: 9, fontWeight: 700, padding: "2px 10px", borderRadius: 10 }}>おすすめ</div>}
+          {tag && <Tag color={tagColor || BLUE}>{tag}</Tag>}
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#1a1a1a", marginTop: 8, marginBottom: 4 }}>{title}</div>
+          <div style={{ fontSize: 24, fontWeight: 700, color: BLUE, marginBottom: 4 }}>{price}</div>
+          <div style={{ fontSize: 11, color: "#555", marginBottom: 8 }}>{sub}</div>
+          {note && <div style={{ fontSize: 10, color: "#888", background: "#f5f5f5", borderRadius: 6, padding: "6px 10px", lineHeight: 1.6, whiteSpace: "pre-line" }}>{note}</div>}
+        </div>
+      );
+    }
+
+    // ── メイン ────────────────────────────────────────────────────────
+    function App() {
+      const [tab, setTab] = useState("standard");
+
+      return (
+        <div style={{ fontFamily: "'Helvetica Neue','Hiragino Sans','Meiryo',sans-serif", maxWidth: 720, margin: "0 auto", padding: "40px 24px", color: "#1a1a1a", lineHeight: 1.6 }}>
+
+          {/* ヘッダー */}
+          <div style={{ marginBottom: 40, paddingBottom: 24, borderBottom: `3px solid ${BLUE}` }}>
+            <div style={{ fontSize: 11, color: "#888", marginBottom: 6 }}>ホームページ制作　ご提案</div>
+            <div style={{ fontSize: 28, fontWeight: 700, color: BLUE, marginBottom: 6 }}>株式会社G-field 様</div>
+            <div style={{ fontSize: 12, color: "#666" }}>提案者：優.bento　　提案日：2026年　6月　11日</div>
+          </div>
+
+          {/* 1. サイトのイメージ */}
+          <Section eyebrow="Preview" title="1. サイトのイメージ">
+            <p style={{ fontSize: 12, color: "#555", marginBottom: 16 }}>
+              タブを切り替えると各セクションの見え方を確認できます。実際のサイトも同じ1ページに縦に並び、上部のナビゲーションから各セクションへ移動できます。
+            </p>
+            <SiteMockup />
+          </Section>
+
+          {/* 2. ページ構成 */}
+          <Section eyebrow="Structure" title="2. ページ構成">
+            <p style={{ fontSize: 12, color: "#555", marginBottom: 14 }}>
+              1ページにすべてのコンテンツをまとめた構成です。ページ遷移がなく、スクロールだけで会社の全体像が伝わります。プライバシーポリシー等の法的ページのみ別ページとして設置します。
+            </p>
+            <StructureChart />
+          </Section>
+
+          {/* 3. 管理体制 */}
+          <Section eyebrow="Infrastructure" title="3. 管理体制と技術構成">
+            <p style={{ fontSize: 12, color: "#555", marginBottom: 14 }}>
+              G-field さまが所有するアカウントでサイトを運営します。制作完了後に引き継ぎを行えば、今後は特定の制作者に依存しない体制になります。
+            </p>
+            <InfraChart />
+            <div style={{ marginTop: 14, padding: "12px 16px", background: "#f0f8f0", border: `1px solid ${GREEN}`, borderRadius: 8 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: GREEN, marginBottom: 4 }}>完全引き継ぎが可能な理由</div>
+              <div style={{ fontSize: 11, color: "#444", lineHeight: 1.7 }}>
+                ドメイン・ホスティング・コードはすべてG-field さまのアカウントで管理します。優.bento はGitHub上の「共同編集者」として作業するだけなので、引き継ぎ後は削除するだけで完全に切り離せます。別の制作会社への移管も自由です。
+              </div>
+            </div>
+          </Section>
+
+          {/* 4. 費用 */}
+          <Section eyebrow="Pricing" title="4. 費用">
+            <div style={{ display: "flex", gap: 0, marginBottom: 20, border: "1.5px solid #e0e8f0", borderRadius: 8, overflow: "hidden" }}>
+              {[["standard","スタンダードプラン"],["cms","管理画面ありプラン"]].map(([key, label]) => (
+                <button key={key} onClick={() => setTab(key)} style={{ flex: 1, padding: "10px", fontSize: 12, fontWeight: tab === key ? 700 : 400, background: tab === key ? BLUE : "#fff", color: tab === key ? "#fff" : "#666", border: "none", cursor: "pointer", transition: "all 0.15s" }}>
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {tab === "standard" && (
+              <div>
+                <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
+                  <PriceCard title="制作費（初期）" price="30,000円" sub="税込・一括" tag="初期費用" highlight />
+                  <PriceCard title="維持費（月額）" price="0円" sub="ホスティング・ドメイン除く" tag="月額" tagColor={GREEN}
+                    note={"ホスティング（Cloudflare Pages）：無料\nドメイン年間更新：約1,500〜2,000円/年"} />
+                </div>
+                <div style={{ background: "#f5f8ff", borderRadius: 8, padding: "14px 16px", fontSize: 11, color: "#555", lineHeight: 1.8 }}>
+                  <div style={{ fontWeight: 700, color: "#333", marginBottom: 8 }}>制作費に含まれるもの</div>
+                  {["デザイン・コーディング（1ページ完結構成）","お問い合わせフォーム設置・メール通知設定","ドメイン・ホスティング初期設定サポート","プライバシーポリシーページ","SEO基本設定（タイトル・メタ・OGP）","納品後の操作説明・引き継ぎドキュメント"].map(t => (
+                    <div key={t} style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 4 }}>
+                      <LucideIcon name="CheckCircle2" size={13} color={GREEN} />
+                      <span>{t}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {tab === "cms" && (
+              <div>
+                <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
+                  <PriceCard title="制作費（初期）" price="50,000円〜" sub="税込・要相談" tag="初期費用" highlight />
+                  <PriceCard title="維持費（月額）" price="0円" sub="ホスティング・ドメイン除く" tag="月額" tagColor={GREEN}
+                    note={"ホスティング（Cloudflare Pages）：無料\nドメイン年間更新：約1,500〜2,000円/年"} />
+                </div>
+                <div style={{ background: "#fff8ec", border: `1px solid ${ACCENT}`, borderRadius: 8, padding: "12px 16px", fontSize: 11, color: "#555", lineHeight: 1.7, marginBottom: 12 }}>
+                  <div style={{ fontWeight: 700, color: "#b07010", marginBottom: 4 }}>管理画面ありプランとは？</div>
+                  ログイン画面からテキストや写真をGUIで変更できる管理機能を追加します。Gitなどの専門知識不要で、ブラウザから直接編集が可能になります。ただし開発工数が増えるため、費用は要相談となります。
+                </div>
+                <div style={{ background: "#f5f8ff", borderRadius: 8, padding: "14px 16px", fontSize: 11, color: "#555", lineHeight: 1.8 }}>
+                  <div style={{ fontWeight: 700, color: "#333", marginBottom: 8 }}>スタンダードプランの内容に加えて</div>
+                  {["管理者ログイン機能","テキスト・写真の編集画面","お知らせ記事の投稿・削除"].map(t => (
+                    <div key={t} style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 4 }}>
+                      <LucideIcon name="CheckCircle2" size={13} color={ACCENT} />
+                      <span>{t}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div style={{ marginTop: 20 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#333", marginBottom: 10 }}>納品後の修正対応</div>
+              <div style={{ display: "flex", gap: 12 }}>
+                <div style={{ flex: 1, border: "1.5px solid #e0e8f0", borderRadius: 8, padding: "14px" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#333", marginBottom: 4 }}>都度対応</div>
+                  <div style={{ fontSize: 20, fontWeight: 700, color: BLUE, marginBottom: 4 }}>3,000円〜</div>
+                  <div style={{ fontSize: 10, color: "#888", lineHeight: 1.6 }}>テキスト修正・写真差し替えなど1件あたりの対応。作業量により変動します。</div>
+                </div>
+                <div style={{ flex: 1, border: `1.5px solid ${BLUE}`, borderRadius: 8, padding: "14px", background: "#f0f5ff", position: "relative" }}>
+                  <div style={{ position: "absolute", top: -10, left: 12, background: BLUE, color: "#fff", fontSize: 9, fontWeight: 700, padding: "2px 10px", borderRadius: 10 }}>おすすめ</div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#333", marginBottom: 4 }}>月額サポート</div>
+                  <div style={{ fontSize: 20, fontWeight: 700, color: BLUE, marginBottom: 4 }}>5,000円/月</div>
+                  <div style={{ fontSize: 10, color: "#888", lineHeight: 1.6 }}>月2回までの修正対応を含みます。急ぎの対応や小さな変更も気軽に依頼できます。</div>
+                </div>
+              </div>
+            </div>
+          </Section>
+
+          {/* 5. 納期 */}
+          <Section eyebrow="Schedule" title="5. 納期の目安">
+            <div style={{ position: "relative", paddingLeft: 24 }}>
+              <div style={{ position: "absolute", left: 8, top: 6, bottom: 6, width: 2, background: "#e0e8f0" }} />
+              {[
+                ["1週間以内","ヒアリング・素材提供","写真・テキスト・会社情報をお送りいただきます"],
+                ["〜2週間","デザイン確認","全体のデザインをご確認いただき、修正をお伝えください"],
+                ["〜1週間","コーディング・実装","デザイン通りに制作します"],
+                ["〜数日","テスト・最終確認","実際のURLで確認いただき、最終調整を行います"],
+                ["完了","本番公開・引き継ぎ","ドメイン設定・操作説明ドキュメントをお渡しします"],
+              ].map(([period, title, desc], i) => (
+                <div key={i} style={{ display: "flex", gap: 14, marginBottom: 16, alignItems: "flex-start" }}>
+                  <div style={{ width: 16, height: 16, borderRadius: "50%", background: i === 4 ? ACCENT : BLUE, flexShrink: 0, marginTop: 2, zIndex: 1, border: "2px solid #fff", boxShadow: "0 0 0 1.5px #ccd8f0" }} />
+                  <div>
+                    <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 2 }}>
+                      <span style={{ fontSize: 10, color: "#888" }}>{period}</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: "#1a1a1a" }}>{title}</span>
+                    </div>
+                    <div style={{ fontSize: 11, color: "#666" }}>{desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{ background: "#f5f5f5", borderRadius: 8, padding: "10px 14px", fontSize: 11, color: "#666" }}>
+              素材のご提供が早ければ、全体で <strong>約1ヶ月</strong> での公開が可能です。
+            </div>
+          </Section>
+
+          {/* 6. ご確認いただきたいこと */}
+          <Section eyebrow="Next Steps" title="6. ご確認いただきたいこと">
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {[
+                "管理画面あり／なしのどちらをご希望ですか？",
+                "納品後の修正は都度対応・月額サポートどちらが合いますか？",
+                "ご用意いただける写真素材はありますか？（なければフリー素材で対応します）",
+                "公開希望時期はありますか？",
+              ].map((q, i) => (
+                <div key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: "10px 14px", background: "#f5f8ff", borderRadius: 8, border: "1px solid #e0e8f0" }}>
+                  <div style={{ background: BLUE, color: "#fff", borderRadius: "50%", width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{i + 1}</div>
+                  <div style={{ fontSize: 12, color: "#333" }}>{q}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ marginTop: 20, padding: "14px 16px", background: "#fff", border: "1.5px solid #e0e8f0", borderRadius: 10, fontSize: 11, color: "#555", lineHeight: 1.8 }}>
+              ご不明な点はお気軽にお声がけください。<br />
+              <span style={{ fontWeight: 700, color: "#333" }}>優.bento</span>
+            </div>
+          </Section>
+
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

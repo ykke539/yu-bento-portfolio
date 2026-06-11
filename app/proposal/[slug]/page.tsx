@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { getProposalBySlug } from '@/lib/notion'
 import { getWorkBySlug } from '@/lib/notion-works'
 import ImageGallery from '@/components/ImageGallery'
@@ -12,6 +12,7 @@ export default async function ProposalPage({ params }: Props) {
   const { slug } = await params
   const proposal = await getProposalBySlug(slug)
   if (!proposal) notFound()
+  if (proposal.htmlUrl) redirect(proposal.htmlUrl)
 
   const worksData = await Promise.all(
     proposal.selectedWorks.map(s => getWorkBySlug(s))

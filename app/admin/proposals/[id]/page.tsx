@@ -12,7 +12,7 @@ export default function EditProposalPage() {
   const id = params.id as string
   const router = useRouter()
 
-  const [form, setForm] = useState({ clientName: '', proposalText: '', selectedWorks: [] as string[], status: 'active' as Proposal['status'], order: '', memo: '' })
+  const [form, setForm] = useState({ clientName: '', proposalText: '', selectedWorks: [] as string[], status: 'active' as Proposal['status'], order: '', memo: '', htmlUrl: '' })
   const [works, setWorks] = useState<WorkOption[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -33,6 +33,7 @@ export default function EditProposalPage() {
         status: data.status ?? 'active',
         order: data.order !== 999 ? String(data.order) : '',
         memo: data.memo ?? '',
+        htmlUrl: data.htmlUrl ?? '',
       })
       setWorks((worksData as WorkOption[]).filter(w => w.status === 'active' || (data.selectedWorks ?? []).includes(w.slug)))
       setLoading(false)
@@ -51,6 +52,7 @@ export default function EditProposalPage() {
         selectedWorks: form.selectedWorks,
         status: form.status,
         memo: form.memo,
+        htmlUrl: form.htmlUrl,
         ...(form.order !== '' ? { order: Number(form.order) } : {}),
       }),
     })
@@ -108,11 +110,21 @@ export default function EditProposalPage() {
           <div>
             <label style={s.label}>提案文</label>
             <textarea value={form.proposalText} onChange={e => setForm({ ...form, proposalText: e.target.value })} style={s.textarea} />
+            <div style={s.hint}>静的HTMLファイルパスを指定する場合は不要</div>
           </div>
 
           <div>
             <label style={s.label}>メモ</label>
             <input type="text" value={form.memo} onChange={e => setForm({ ...form, memo: e.target.value })} style={s.input} placeholder="提案先・経緯・メモ等" />
+          </div>
+
+          <div style={{ paddingTop: '8px', borderTop: '1px solid #f5f5f4' }}>
+            <label style={s.label}>静的HTMLファイルパス（任意）</label>
+            <input type="text" value={form.htmlUrl} onChange={e => setForm({ ...form, htmlUrl: e.target.value })} style={s.input} placeholder="/proposals/example.html" />
+            <div style={s.hint}>
+              public/proposals/ にHTMLファイルを配置した場合のパスを指定すると、
+              /proposal/{slug || '{slug}'} へのアクセス時にそのファイルへ自動転送されます（提案文・実績は使用されません）
+            </div>
           </div>
 
           <div>

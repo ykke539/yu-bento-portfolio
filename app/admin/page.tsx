@@ -163,12 +163,15 @@ export default function AdminPage() {
               <div key={p.id} style={s.row}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
                   <div style={s.clientName}>{p.clientName || '（名前なし）'}{p.memo ? <span style={{ marginLeft: '8px', fontSize: '11px', color: '#a8a29e', fontWeight: 400 }}>{p.memo}</span> : null}</div>
-                  <span style={badge(p.status)}>{STATUS_LABEL[p.status]?.label ?? p.status}</span>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    {p.htmlUrl && <span style={badge('html')}>静的HTML</span>}
+                    <span style={badge(p.status)}>{STATUS_LABEL[p.status]?.label ?? p.status}</span>
+                  </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                   <span style={{ ...s.slug, flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {p.order !== 999 && <span style={{ marginRight: '8px', color: '#d6d3d1' }}>#{p.order}</span>}
-                    /proposal/{p.slug}
+                    /proposal/{p.slug}{p.htmlUrl && <span style={{ color: '#a8a29e' }}> → {p.htmlUrl}</span>}
                   </span>
                   <button onClick={() => copyUrl(p.slug)} style={{ ...s.copyBtn, background: copied === p.slug ? '#f0fdf4' : '#fff', color: copied === p.slug ? '#166534' : '#44403c', flexShrink: 0 }}>
                     {copied === p.slug ? '✓ コピー' : 'URLコピー'}

@@ -37,14 +37,14 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   if (!isAuthed(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { clientName, proposalText, selectedWorks } = await req.json()
-  if (!clientName || !proposalText) {
-    return NextResponse.json({ error: 'clientName と proposalText は必須です' }, { status: 400 })
+  const { clientName, proposalText, selectedWorks, htmlUrl, memo } = await req.json()
+  if (!clientName || !(proposalText || htmlUrl)) {
+    return NextResponse.json({ error: 'clientName と、proposalText か htmlUrl のいずれかは必須です' }, { status: 400 })
   }
 
   try {
     const slug = crypto.randomUUID()
-    const proposal = await createProposal({ slug, clientName, proposalText, selectedWorks: selectedWorks ?? [] })
+    const proposal = await createProposal({ slug, clientName, proposalText: proposalText ?? '', selectedWorks: selectedWorks ?? [], htmlUrl, memo })
     return NextResponse.json(proposal, { status: 201 })
   } catch (e: any) {
     console.error('[admin/proposals POST]', e)
