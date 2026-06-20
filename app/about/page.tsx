@@ -1,5 +1,5 @@
 import Footer from '@/components/Footer'
-import { getAboutContent, type SkillItem } from '@/lib/notion-about'
+import { getAboutContent, type SkillItem, type RichTextSpan } from '@/lib/notion-about'
 import { SnsIcon } from '@/components/SnsIcon'
 
 export const metadata = {
@@ -8,6 +8,16 @@ export const metadata = {
 
 const monoStyle = { fontFamily: 'var(--font-dm-mono)' }
 const serifStyle = { fontFamily: 'var(--font-shippori)' }
+
+// Notionのcolor annotationをCSSカラーに変換
+function renderRichText(spans: RichTextSpan[]) {
+  return spans.map((s, i) => {
+    const colored = s.color !== 'default'
+    return colored
+      ? <em key={i} className="not-italic" style={{ color: 'var(--color-taupe)' }}>{s.text}</em>
+      : <span key={i}>{s.text}</span>
+  })
+}
 
 function buildSkillGroups(skillItems: SkillItem[]) {
   const groups: Record<string, { name: string; level: string }[]> = {}
@@ -21,7 +31,7 @@ function buildSkillGroups(skillItems: SkillItem[]) {
 }
 
 export default async function AboutPage() {
-  const { journey, misc, skills: skillItems, profile } = await getAboutContent()
+  const { journey, misc, skills: skillItems, profile, philosophy } = await getAboutContent()
 
   const skills = buildSkillGroups(skillItems)
   const profileMap = Object.fromEntries(profile.map(p => [p.title, p.body]))
@@ -182,12 +192,40 @@ export default async function AboutPage() {
         </div>
       </div>
 
+      {/* PHILOSOPHY */}
+      {philosophy.length > 0 && (
+        <div id="philosophy" className="max-w-[1200px] mx-auto px-6 md:px-14">
+          <div className="py-16 md:py-28" style={{ borderTop: '1px solid var(--color-border)' }}>
+            <div className="flex items-center gap-5 mb-16">
+              <span style={{ ...monoStyle, fontSize: '11px', color: 'var(--color-taupe)', letterSpacing: '0.1em' }}>03</span>
+              <span className="flex-1 h-px" style={{ background: 'var(--color-border)' }} />
+              <span style={{ ...monoStyle, fontSize: '11px', color: 'var(--color-muted)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Philosophy</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2">
+              {philosophy.map((item, i) => (
+                <div
+                  key={item.id}
+                  className={['py-10 md:py-12 border-t', i % 2 === 0 ? 'md:pr-16 md:border-r' : 'md:pl-16'].join(' ')}
+                  style={{ borderColor: 'var(--color-border)' }}
+                >
+                  <div className="mb-5 text-sm tracking-[0.05em]" style={{ ...serifStyle, color: 'var(--color-taupe)' }}>{item.title}</div>
+                  <div className="leading-[1.5] mb-5 whitespace-pre-line" style={{ ...serifStyle, fontSize: 'clamp(20px, 3vw, 34px)', fontWeight: 500, color: 'var(--color-ink)' }}>
+                    {renderRichText(item.bodyRich)}
+                  </div>
+                  <div className="text-[13px] leading-[1.8]" style={{ color: 'var(--color-muted)', maxWidth: '340px' }}>{item.sub_label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* MISC */}
       {misc.length > 0 && (
         <div className="max-w-[1200px] mx-auto px-6 md:px-14">
           <div className="py-16 md:py-28" style={{ borderTop: '1px solid var(--color-border)' }}>
             <div className="flex items-center gap-5 mb-16">
-              <span style={{ ...monoStyle, fontSize: '11px', color: 'var(--color-taupe)', letterSpacing: '0.1em' }}>03</span>
+              <span style={{ ...monoStyle, fontSize: '11px', color: 'var(--color-taupe)', letterSpacing: '0.1em' }}>04</span>
               <span className="flex-1 h-px" style={{ background: 'var(--color-border)' }} />
               <span style={{ ...monoStyle, fontSize: '11px', color: 'var(--color-muted)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Elsewhere</span>
             </div>
