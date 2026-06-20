@@ -29,10 +29,19 @@ export default function ImageGallery({ images, alt }: Props) {
         className="relative overflow-hidden w-full"
         style={{ aspectRatio: '4 / 3', background: 'var(--color-border)' }}
       >
+        {/* 背景：同じ画像を拡大・ぼかして余白を埋める */}
+        <img
+          src={images[selected]}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl transition-opacity duration-[180ms]"
+          style={{ opacity: fading ? 0 : 1 }}
+        />
+        {/* 前景：トリミングせず枠内にフィット */}
         <img
           src={images[selected]}
           alt={`${alt} — ${selected + 1}`}
-          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-[180ms]"
+          className="absolute inset-0 w-full h-full object-contain transition-opacity duration-[180ms]"
           style={{ opacity: fading ? 0 : 1 }}
         />
       </div>

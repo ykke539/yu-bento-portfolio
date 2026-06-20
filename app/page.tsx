@@ -13,10 +13,10 @@ export default async function Home() {
   return (
     <main>
       <Hero />
-      <Philosophy />
-      <WorksPreview />
-      <Process steps={process} />
       <AboutSection rows={aboutStats} introRich={introTopItem?.bodyRich} />
+      <WorksPreview />
+      <Philosophy />
+      <Process steps={process} />
       <Contact />
       <Footer />
     </main>
