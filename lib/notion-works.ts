@@ -1,8 +1,43 @@
 import { Client } from '@notionhq/client'
 import { unstable_cache } from 'next/cache'
+import { put } from '@vercel/blob'
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY })
 const WORKS_DB_ID = process.env.NOTION_WORKS_DB_ID!
+
+// Notionにアップロードした画像は file.url が一時署名URL（数時間で失効）になるため、
+// 初回読み込み時に Vercel Blob へ永続コピーし、ブロックを external 参照に書き換える
+async function persistImageUrl(block: any): Promise<string> {
+  const externalUrl = block.image?.external?.url
+  if (externalUrl) return externalUrl
+
+  const tempUrl = block.image?.file?.url
+  if (!tempUrl) return ''
+
+  try {
+    const res = await fetch(tempUrl)
+    if (!res.ok) return tempUrl
+    const contentType = res.headers.get('content-type') ?? 'image/jpeg'
+    const ext = contentType.split('/')[1]?.split('+')[0] ?? 'jpg'
+    const buffer = Buffer.from(await res.arrayBuffer())
+
+    const blob = await put(`works/${block.id}.${ext}`, buffer, {
+      access: 'public',
+      contentType,
+      addRandomSuffix: false,
+    })
+
+    await notion.blocks.update({
+      block_id: block.id,
+      image: { external: { url: blob.url } },
+    } as any)
+
+    return blob.url
+  } catch {
+    // 移行に失敗した場合は元のURL（いずれ失効する）をそのまま返す
+    return tempUrl
+  }
+}
 
 export interface ScopeRow {
   key: string
@@ -74,7 +109,7 @@ export async function fetchPageContent(pageId: string): Promise<{ thinking: Thin
 
     // 画像ブロック
     if (b.type === 'image') {
-      const url = b.image?.file?.url ?? b.image?.external?.url ?? ''
+      const url = await persistImageUrl(b)
       if (url) images.push(url)
       continue
     }
