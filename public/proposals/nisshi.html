@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webサイト制作 提案書 — ニッシー様</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap');
+
+  :root {
+    --paper: #F7F3EC;
+    --paper-deep: #F0EAE0;
+    --ink: #1C1A17;
+    --ink-soft: #5B564E;
+    --ink-faint: #8A8377;
+    --accent: #C1272D;
+    --accent-soft: #E8B4B4;
+    --accent-wash: #FBEDEC;
+    --line: #DDD5C7;
+    --amber: #B5781A;
+    --amber-wash: #FBF2E2;
+    --green: #3F7A4F;
+    --green-wash: #EBF4EC;
+    --white: #FFFEFB;
+    --serif: 'Shippori Mincho', serif;
+    --sans: 'Zen Kaku Gothic New', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--accent-soft); color: var(--ink); }
+
+  a { color: inherit; }
+
+  /* ── Texture ─────────────────────────────────────────── */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(28,26,23,0.035) 1px, transparent 0);
+    background-size: 22px 22px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Progress rail ───────────────────────────────────── */
+  .rail {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    width: 0%;
+    background: var(--accent);
+    z-index: 100;
+    transition: width 0.1s linear;
+  }
+
+  /* ── Top nav ─────────────────────────────────────────── */
+  .topnav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(247,243,236,0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 0;
+  }
+  .topnav-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .brandmark {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .brandmark span { color: var(--accent); }
+  .nav-scroll {
+    display: flex;
+    gap: 2px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .nav-scroll::-webkit-scrollbar { display: none; }
+  .nav-pill {
+    flex-shrink: 0;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 7px 12px;
+    border-radius: 100px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    letter-spacing: 0.01em;
+  }
+  .nav-pill:hover { background: var(--paper-deep); color: var(--ink); }
+  .nav-pill.active { background: var(--ink); color: var(--paper); }
+
+  /* ── Container ───────────────────────────────────────── */
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 28px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Cover ───────────────────────────────────────────── */
+  .cover {
+    min-height: 86vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 28px;
+    position: relative;
+  }
+  .cover-eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: riseIn 0.8s ease 0.1s forwards;
+  }
+  .cover-title {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: clamp(40px, 8vw, 76px);
+    line-height: 1.15;
+    letter-spacing: 0.01em;
+    opacity: 0;
+    animation: riseIn 0.9s ease 0.25s forwards;
+  }
+  .cover-title em {
+    font-style: normal;
+    color: var(--accent);
+    position: relative;
+    display: inline-block;
+  }
+  .cover-sub {
+    margin-top: 28px;
+    font-size: 17px;
+    color: var(--ink-soft);
+    max-width: 480px;
+    opacity: 0;
+    animation: riseIn 0.9s ease 0.45s forwards;
+  }
+  .cover-meta {
+    margin-top: 56px;
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: riseIn 0.9s ease 0.6s forwards;
+  }
+  .cover-meta-item .label {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .cover-meta-item .value {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 600;
+  }
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .cover-line {
+    position: absolute;
+    bottom: 0; left: 28px; right: 28px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--accent), transparent 60%);
+  }
+
+  /* ── Sections ────────────────────────────────────────── */
+  section.block {
+    padding: 86px 0 0;
+    scroll-margin-top: 76px;
+  }
+  section.block:last-of-type { padding-bottom: 100px; }
+
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    margin-bottom: 36px;
+  }
+  .sec-num {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--white);
+    background: var(--ink);
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .sec-title {
+    font-family: var(--serif);
+    font-size: clamp(22px, 3.4vw, 30px);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+  .sec-lead {
+    color: var(--ink-soft);
+    font-size: 15px;
+    max-width: 640px;
+    margin-bottom: 30px;
+  }
+  .sec-note {
+    color: var(--ink-faint);
+    font-size: 13px;
+    margin-top: 18px;
+    padding-left: 14px;
+    border-left: 2px solid var(--line);
+  }
+
+  /* ── Info table (key/value) ──────────────────────────── */
+  .kv {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--white);
+  }
+  .kv-row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    border-bottom: 1px solid var(--line);
+  }
+  .kv-row:last-child { border-bottom: none; }
+  .kv-row .k {
+    background: var(--paper-deep);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    color: var(--ink-soft);
+  }
+  .kv-row .v {
+    padding: 16px 20px;
+    font-size: 14.5px;
+    display: flex;
+    align-items: center;
+  }
+  @media (max-width: 600px) {
+    .kv-row { grid-template-columns: 1fr; }
+    .kv-row .k { padding-bottom: 6px; }
+  }
+
+  /* ── Pricing cards ───────────────────────────────────── */
+  .price-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 26px;
+    background: var(--paper-deep);
+    padding: 5px;
+    border-radius: 100px;
+    width: fit-content;
+  }
+  .price-toggle button {
+    border: none;
+    background: transparent;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 9px 18px;
+    border-radius: 100px;
+    cursor: pointer;
+    color: var(--ink-soft);
+    transition: all 0.25s ease;
+  }
+  .price-toggle button.on {
+    background: var(--ink);
+    color: var(--white);
+  }
+  .price-pane { display: none; }
+  .price-pane.show { display: block; animation: fadeUp 0.35s ease; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .scope-card {
+    background: var(--green-wash);
+    border: 1px solid #CFE3D2;
+    border-radius: 12px;
+    padding: 26px 26px 8px;
+    margin-bottom: 14px;
+  }
+  .scope-card .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+  }
+  .scope-card .tag::before {
+    content: "";
+    width: 7px; height: 7px;
+    background: var(--green);
+    border-radius: 50%;
+  }
+  .scope-item {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 14px;
+    padding: 14px 0;
+    border-top: 1px solid #CFE3D2;
+    font-size: 14px;
+  }
+  .scope-item:first-of-type { border-top: none; }
+  .scope-item .label2 { font-weight: 700; color: var(--ink); font-size: 13px; }
+  .scope-item .desc { color: var(--ink-soft); }
+  @media (max-width: 600px) {
+    .scope-item { grid-template-columns: 1fr; gap: 4px; }
+  }
+
+  .option-card {
+    background: var(--amber-wash);
+    border: 1px solid #EAD3A0;
+    border-radius: 12px;
+    padding: 22px 26px;
+    margin-bottom: 14px;
+  }
+  .option-card .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--amber);
+    letter-spacing: 0.05em;
+    margin-bottom: 14px;
+  }
+  .option-card .tag::before {
+    content: "";
+    width: 7px; height: 7px;
+    background: var(--amber);
+    border-radius: 50%;
+  }
+  .option-row {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 16px;
+    padding: 13px 0;
+    border-top: 1px solid #EAD3A0;
+  }
+  .option-row:first-of-type { border-top: none; }
+  .option-row .name { font-weight: 700; font-size: 13.5px; }
+  .option-row .why { font-size: 13px; color: var(--ink-soft); }
+  @media (max-width: 600px) {
+    .option-row { grid-template-columns: 1fr; gap: 4px; }
+  }
+
+  /* ── Schedule ────────────────────────────────────────── */
+  .timeline {
+    position: relative;
+    padding-left: 30px;
+  }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 9px; top: 6px; bottom: 6px;
+    width: 2px;
+    background: var(--line);
+  }
+  .phase {
+    position: relative;
+    padding-bottom: 32px;
+  }
+  .phase:last-child { padding-bottom: 0; }
+  .phase::before {
+    content: "";
+    position: absolute;
+    left: -30px; top: 4px;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 2.5px solid var(--accent);
+  }
+  .phase-week {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+    margin-bottom: 4px;
+  }
+  .phase-title {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .phase-desc {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    max-width: 560px;
+  }
+
+  /* ── Page cards ──────────────────────────────────────── */
+  .page-list { display: flex; flex-direction: column; gap: 8px; }
+  .page-card {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    align-items: center;
+    gap: 16px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 14px 18px;
+  }
+  .page-card code {
+    font-family: 'SF Mono', Consolas, monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .page-card .desc { font-size: 13.5px; color: var(--ink-soft); }
+  @media (max-width: 600px) {
+    .page-card { grid-template-columns: 1fr; gap: 4px; }
+  }
+
+  /* ── Section flow grid (TOP page) ───────────────────── */
+  .flow {
+    display: flex;
+    flex-direction: column;
+  }
+  .flow-item {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .flow-item:last-child { border-bottom: none; }
+  .flow-num {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--ink-faint);
+  }
+  .flow-name { font-weight: 700; font-size: 14px; margin-bottom: 3px; }
+  .flow-desc { font-size: 13.5px; color: var(--ink-soft); }
+
+  /* ── Accordion (service cards) ───────────────────────── */
+  .accordion { display: flex; flex-direction: column; gap: 10px; }
+  .acc-item {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .acc-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .acc-icon {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--accent-wash);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .acc-titles { flex: 1; }
+  .acc-titles .t1 { font-size: 11px; color: var(--ink-faint); font-weight: 700; letter-spacing: 0.04em; }
+  .acc-titles .t2 { font-family: var(--serif); font-size: 16.5px; font-weight: 700; margin-top: 2px; }
+  .acc-chevron {
+    width: 22px; height: 22px;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+    color: var(--ink-faint);
+  }
+  .acc-item.open .acc-chevron { transform: rotate(180deg); }
+  .acc-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+  .acc-item.open .acc-body { max-height: 600px; }
+  .acc-body-inner {
+    padding: 0 20px 22px 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+  }
+  .acc-field .fl { font-size: 11px; font-weight: 700; color: var(--ink-faint); letter-spacing: 0.04em; margin-bottom: 4px; }
+  .acc-field .fv { font-size: 13.5px; color: var(--ink); }
+  .acc-field .fv.todo { color: var(--amber); font-weight: 600; }
+  .acc-field .fv.done { color: var(--green); font-weight: 600; }
+
+  /* ── Copy table ──────────────────────────────────────── */
+  .copy-list { display: flex; flex-direction: column; gap: 14px; }
+  .copy-row {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 22px;
+  }
+  .copy-use { font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: 0.04em; margin-bottom: 8px; }
+  .copy-text { font-family: var(--serif); font-size: 16px; line-height: 1.7; }
+
+  /* ── Simple list table (reasons / testimonials) ─────── */
+  .simple-table { display: flex; flex-direction: column; gap: 10px; }
+  .simple-row {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 22px;
+  }
+  .simple-row .h { font-weight: 700; font-size: 14.5px; margin-bottom: 6px; }
+  .simple-row .b { font-size: 13.5px; color: var(--ink-soft); }
+  .simple-row .tagchip {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-wash);
+    padding: 3px 10px;
+    border-radius: 100px;
+    margin-top: 8px;
+  }
+
+  /* ── Priority tables ─────────────────────────────────── */
+  .pri-group { margin-bottom: 28px; }
+  .pri-group:last-child { margin-bottom: 0; }
+  .pri-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 100px;
+    margin-bottom: 16px;
+  }
+  .pri-label.red { background: var(--accent-wash); color: var(--accent); }
+  .pri-label.amber { background: var(--amber-wash); color: var(--amber); }
+  .pri-label.green { background: var(--green-wash); color: var(--green); }
+
+  .pri-table { display: flex; flex-direction: column; gap: 8px; }
+  .pri-row {
+    display: grid;
+    grid-template-columns: 1.1fr 1.4fr;
+    gap: 18px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 15px 20px;
+  }
+  .pri-row .item { font-size: 13.5px; font-weight: 700; }
+  .pri-row .note { font-size: 12.5px; color: var(--ink-soft); }
+  @media (max-width: 600px) {
+    .pri-row { grid-template-columns: 1fr; gap: 4px; }
+  }
+
+  /* ── footer ──────────────────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 40px 28px 60px;
+    text-align: center;
+  }
+  footer .fname {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--accent);
+  }
+  footer .fsub {
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    margin-top: 6px;
+    letter-spacing: 0.04em;
+  }
+
+  /* generic table fallback within kv for legal section */
+  .legal-row { display: flex; flex-direction: column; gap: 14px; }
+</style>
+</head>
+<body>
+
+<div class="rail" id="rail"></div>
+
+<nav class="topnav">
+  <div class="topnav-inner">
+    <div class="brandmark">ニッシー様 <span>提案書</span></div>
+    <div class="nav-scroll" id="navScroll">
+      <a class="nav-pill" data-target="s1" href="#s1">概要</a>
+      <a class="nav-pill" data-target="s2" href="#s2">見積り</a>
+      <a class="nav-pill" data-target="s3" href="#s3">スケジュール</a>
+      <a class="nav-pill" data-target="s4" href="#s4">サイト構成</a>
+      <a class="nav-pill" data-target="s5" href="#s5">TOP構成</a>
+      <a class="nav-pill" data-target="s6" href="#s6">コンテンツ</a>
+      <a class="nav-pill" data-target="s7" href="#s7">不足情報</a>
+      <a class="nav-pill" data-target="s8" href="#s8">法的ページ</a>
+      <a class="nav-pill" data-target="s9" href="#s9">引き渡し</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- ── COVER ──────────────────────────────────────── -->
+  <div class="cover">
+    <div class="cover-eyebrow">Web Site Proposal</div>
+    <h1 class="cover-title">好きや得意を、<br><em>未来の収入</em>へ。</h1>
+    <p class="cover-sub">ライバー育成・オンライン教室コンサル・オンライン料理教室・北海道食材販売 — 4つの事業をまとめて紹介するWebサイト制作のご提案です。</p>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <div class="label">Client</div>
+        <div class="value">ニッシー 様</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="label">Date</div>
+        <div class="value">2026年6月30日</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="label">Produced by</div>
+        <div class="value">優.bento</div>
+      </div>
+    </div>
+    <div class="cover-line"></div>
+  </div>
+
+  <!-- ── 1. 提案概要 ────────────────────────────────── -->
+  <section class="block" id="s1">
+    <div class="sec-head">
+      <div class="sec-num">1</div>
+      <h2 class="sec-title">提案概要</h2>
+    </div>
+    <p class="sec-lead">本提案書は、ニッシー様の4事業（ライバー育成・オンライン教室コンサル・オンライン料理教室・北海道食材販売）をまとめて紹介するWebサイトの制作方針をまとめたものです。</p>
+
+    <div class="kv">
+      <div class="kv-row"><div class="k">サイト種別</div><div class="v">静的Webサイト（情報発信・集客）</div></div>
+      <div class="kv-row"><div class="k">技術構成</div><div class="v">Next.js（App Router）+ Tailwind CSS + Vercel</div></div>
+      <div class="kv-row"><div class="k">DB / バックエンド</div><div class="v">なし（静的サイト）</div></div>
+      <div class="kv-row"><div class="k">フォーム</div><div class="v">Googleフォーム埋め込み or LINE誘導（※後述・要確認）</div></div>
+      <div class="kv-row"><div class="k">EC機能</div><div class="v">なし（北海道食材は外部ECへのリンクのみ）</div></div>
+      <div class="kv-row"><div class="k">引き渡し方法</div><div class="v">GitHubリポジトリ + Vercelデプロイ済み環境</div></div>
+    </div>
+  </section>
+
+  <!-- ── 2. お見積り ────────────────────────────────── -->
+  <section class="block" id="s2">
+    <div class="sec-head">
+      <div class="sec-num">2</div>
+      <h2 class="sec-title">お見積り</h2>
+    </div>
+
+    <div class="price-toggle">
+      <button class="on" data-pane="free">無償範囲</button>
+      <button data-pane="opt">要見積り（オプション）</button>
+    </div>
+
+    <div class="price-pane show" id="pane-free">
+      <p class="sec-lead" style="margin-bottom:18px;">以下のページ・機能はすべて制作費 <strong>無償</strong> で対応いたします。</p>
+      <div class="scope-card">
+        <div class="tag">無償スコープ</div>
+        <div class="scope-item">
+          <div class="label2">ページ一式</div>
+          <div class="desc">TOP / ライバー代理店事業 / オンライン教室コンサル / オンライン料理教室 / 北海道食材販売 / お問い合わせ / プライバシーポリシー / 特定商取引法に基づく表示（要否確認後）</div>
+        </div>
+        <div class="scope-item">
+          <div class="label2">機能一式</div>
+          <div class="desc">サービス紹介・選ばれる理由・お客様の声の表示、外部EC・外部フォームへの導線設置、レスポンシブ対応、SEO/OGP設定</div>
+        </div>
+        <div class="scope-item">
+          <div class="label2">引き渡し</div>
+          <div class="desc">GitHubリポジトリ＋Vercelデプロイ済み環境＋README</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="price-pane" id="pane-opt">
+      <p class="sec-lead" style="margin-bottom:18px;">以下は無償スコープ外のため、追加実装をご希望の場合は別途お見積りとなります。</p>
+      <div class="option-card">
+        <div class="tag">要見積り</div>
+        <div class="option-row">
+          <div class="name">お知らせ / ブログ機能</div>
+          <div class="why">ご自身で更新できるCMS的な仕組みが必要なため、無償スコープ外。要見積</div>
+        </div>
+        <div class="option-row">
+          <div class="name">料理教室の予約・日程管理機能</div>
+          <div class="why">予約システムの実装が必要な場合は要見積（Googleカレンダー埋め込みなら無償対応可）</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 3. 開発スケジュール ───────────────────────── -->
+  <section class="block" id="s3">
+    <div class="sec-head">
+      <div class="sec-num">3</div>
+      <h2 class="sec-title">開発スケジュール（仮設）</h2>
+    </div>
+    <p class="sec-lead">公開まで約1ヶ月を想定したコンパクトなスケジュールです。下記の「①情報確定」が遅れると、後続フェーズもその分後ろ倒しになります。</p>
+
+    <div class="timeline">
+      <div class="phase">
+        <div class="phase-week">1週目</div>
+        <div class="phase-title">① 情報確定</div>
+        <div class="phase-desc">🔴必須項目（連絡先URL・ショップURL・ブランドカラー等）の確認・受領</div>
+      </div>
+      <div class="phase">
+        <div class="phase-week">2〜3週目</div>
+        <div class="phase-title">② デザイン・実装</div>
+        <div class="phase-desc">トンマナ確定からコーディング・コンテンツ流し込みまで一括対応</div>
+      </div>
+      <div class="phase">
+        <div class="phase-week">4週目</div>
+        <div class="phase-title">③ 確認・修正</div>
+        <div class="phase-desc">クライアント確認、修正対応</div>
+      </div>
+      <div class="phase">
+        <div class="phase-week">4週目末</div>
+        <div class="phase-title">④ 公開</div>
+        <div class="phase-desc">Vercel公開、リポジトリ引き渡し</div>
+      </div>
+    </div>
+    <p class="sec-note">※ 上記はおおよその想定であり、確定情報の受領タイミングや修正内容によって前後する可能性があります。</p>
+  </section>
+
+  <!-- ── 4. サイト構成 ─────────────────────────────── -->
+  <section class="block" id="s4">
+    <div class="sec-head">
+      <div class="sec-num">4</div>
+      <h2 class="sec-title">サイト構成</h2>
+    </div>
+    <p class="sec-lead">4事業のターゲット層がそれぞれ異なるため、TOP + サービス別詳細ページに分けた構成を提案します。これにより、各ページのSEOキーワードを独立させることができ、広告出稿時にも個別のLPとして使えます。</p>
+
+    <div class="page-list">
+      <div class="page-card"><code>/</code><div class="desc">TOP — 全体サマリー＋各サービスへの入口</div></div>
+      <div class="page-card"><code>/liver</code><div class="desc">ライバー代理店事業 — 詳細ページ</div></div>
+      <div class="page-card"><code>/class-consulting</code><div class="desc">オンライン教室コンサル — 詳細ページ</div></div>
+      <div class="page-card"><code>/cooking-class</code><div class="desc">オンライン料理教室 — 詳細ページ</div></div>
+      <div class="page-card"><code>/hokkaido-shop</code><div class="desc">北海道食材販売 — 外部ECへの誘導ページ</div></div>
+      <div class="page-card"><code>/contact</code><div class="desc">お問い合わせ</div></div>
+      <div class="page-card"><code>/privacy-policy</code><div class="desc">プライバシーポリシー</div></div>
+      <div class="page-card"><code>/legal</code><div class="desc">特定商取引法に基づく表示（※要否確認）</div></div>
+    </div>
+    <p class="sec-note">※ プロフィールページは作成せず、TOPページ内セクションに統合します。</p>
+  </section>
+
+  <!-- ── 5. TOPページ構成 ──────────────────────────── -->
+  <section class="block" id="s5">
+    <div class="sec-head">
+      <div class="sec-num">5</div>
+      <h2 class="sec-title">TOPページ セクション構成</h2>
+    </div>
+
+    <div class="flow">
+      <div class="flow-item"><div class="flow-num">01</div><div><div class="flow-name">Header</div><div class="flow-desc">ロゴ＋ナビゲーション（サービス4つ＋お問い合わせ）</div></div></div>
+      <div class="flow-item"><div class="flow-num">02</div><div><div class="flow-name">Hero</div><div class="flow-desc">H1キャッチコピー＋リード文＋メインCTAボタン</div></div></div>
+      <div class="flow-item"><div class="flow-num">03</div><div><div class="flow-name">サービス一覧</div><div class="flow-desc">4事業をカード形式で表示。各詳細ページへリンク</div></div></div>
+      <div class="flow-item"><div class="flow-num">04</div><div><div class="flow-name">選ばれる理由</div><div class="flow-desc">3つの強みを統一フォーマットで表示</div></div></div>
+      <div class="flow-item"><div class="flow-num">05</div><div><div class="flow-name">お客様の声</div><div class="flow-desc">3件（サービスタグ付き・以降追加可能）</div></div></div>
+      <div class="flow-item"><div class="flow-num">06</div><div><div class="flow-name">プロフィール</div><div class="flow-desc">ニッシーの経歴・実績・写真（※素材要提供）</div></div></div>
+      <div class="flow-item"><div class="flow-num">07</div><div><div class="flow-name">お問い合わせCTA</div><div class="flow-desc">各サービスへの相談・申込み導線</div></div></div>
+      <div class="flow-item"><div class="flow-num">08</div><div><div class="flow-name">Footer</div><div class="flow-desc">SNSリンク・各種リンク・コピーライト</div></div></div>
+    </div>
+  </section>
+
+  <!-- ── 6. コンテンツ整理 ─────────────────────────── -->
+  <section class="block" id="s6">
+    <div class="sec-head">
+      <div class="sec-num">6</div>
+      <h2 class="sec-title">コンテンツ整理</h2>
+    </div>
+
+    <h3 style="font-family:var(--serif); font-size:17px; font-weight:700; margin-bottom:8px;">6-1. コピーライティング</h3>
+    <p class="sec-lead" style="margin-bottom:18px;">先方案にキャッチコピーが2系統あったため、以下のように用途を分けて整理しました。</p>
+    <div class="copy-list" style="margin-bottom:46px;">
+      <div class="copy-row">
+        <div class="copy-use">H1（ヒーロー見出し）</div>
+        <div class="copy-text">好きや得意を、未来の収入へ。</div>
+      </div>
+      <div class="copy-row">
+        <div class="copy-use">リード文（ヒーロー直下）</div>
+        <div class="copy-text">ライバー育成、オンライン教室コンサル、オンライン料理教室、北海道食材販売を通じて、一人ひとりの「好き」や「得意」を応援します。</div>
+      </div>
+      <div class="copy-row">
+        <div class="copy-use">meta description（SEO / OGP）</div>
+        <div class="copy-text">あなたの得意を収益に。学び・食・配信を通じて、新しい働き方をサポートします。</div>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--serif); font-size:17px; font-weight:700; margin-bottom:8px;">6-2. サービス一覧</h3>
+    <p class="sec-lead" style="margin-bottom:18px;">4サービスを統一フォーマットに揃え、データファイル（services.ts）として管理します。TOPのカード表示と各詳細ページで同じデータを使い回します。タップで詳細を開閉できます。</p>
+
+    <div class="accordion" style="margin-bottom:46px;" id="serviceAccordion">
+
+      <div class="acc-item open">
+        <div class="acc-head">
+          <div class="acc-icon">①</div>
+          <div class="acc-titles"><div class="t1">LIVER AGENCY</div><div class="t2">ライバー代理店事業</div></div>
+          <svg class="acc-chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="acc-field"><div class="fl">キャッチ</div><div class="fv">未経験から始めるライブ配信サポート</div></div>
+            <div class="acc-field"><div class="fl">内容</div><div class="fv">配信アプリの選定 / 配信方法の指導 / ファン作りサポート / SNS運用サポート / マネタイズ支援 / 個別相談</div></div>
+            <div class="acc-field"><div class="fl">こんな方へ</div><div class="fv">副業を始めたい / 在宅で働きたい / 配信に興味がある / ファンを増やしたい</div></div>
+            <div class="acc-field"><div class="fl">CTA文言</div><div class="fv">無料相談はこちら</div></div>
+            <div class="acc-field"><div class="fl">CTA先</div><div class="fv todo">【要確認】LINE or フォームURL</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <div class="acc-head">
+          <div class="acc-icon">②</div>
+          <div class="acc-titles"><div class="t1">CLASS CONSULTING</div><div class="t2">オンライン教室コンサル</div></div>
+          <svg class="acc-chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="acc-field"><div class="fl">キャッチ</div><div class="fv">あなたの得意をオンライン講座に</div></div>
+            <div class="acc-field"><div class="fl">内容</div><div class="fv">講座設計 / 集客導線構築 / SNS運用 / 公式LINE活用 / 商品設計 / ファン作り</div></div>
+            <div class="acc-field"><div class="fl">実績例</div><div class="fv">ストアカで500名以上を指導 / 受講者評価オール5 / 中華料理部門ランキング1位獲得</div></div>
+            <div class="acc-field"><div class="fl">こんな方へ</div><div class="fv">講師として活動したい / 集客に悩んでいる / オンライン講座を作りたい</div></div>
+            <div class="acc-field"><div class="fl">CTA文言</div><div class="fv">無料相談はこちら</div></div>
+            <div class="acc-field"><div class="fl">CTA先</div><div class="fv todo">【要確認】LINE or フォームURL</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <div class="acc-head">
+          <div class="acc-icon">③</div>
+          <div class="acc-titles"><div class="t1">COOKING CLASS</div><div class="t2">オンライン料理教室</div></div>
+          <svg class="acc-chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="acc-field"><div class="fl">キャッチ</div><div class="fv">プロが教える、お家で簡単本格中華</div></div>
+            <div class="acc-field"><div class="fl">内容</div><div class="fv">Zoomを使ったオンライン料理教室。初心者の方でも楽しく学べるよう丁寧にサポート。</div></div>
+            <div class="acc-field"><div class="fl">メニュー例</div><div class="fv">麻婆豆腐 / 餃子 / 春巻き / チャーハン / エビチリ</div></div>
+            <div class="acc-field"><div class="fl">こんな方へ</div><div class="fv">料理を学びたい / 家庭で本格中華を作りたい / 趣味を増やしたい</div></div>
+            <div class="acc-field"><div class="fl">CTA文言</div><div class="fv">教室に申し込む</div></div>
+            <div class="acc-field"><div class="fl">CTA先</div><div class="fv todo">【要確認】申し込みURL or フォームURL</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="acc-item">
+        <div class="acc-head">
+          <div class="acc-icon">④</div>
+          <div class="acc-titles"><div class="t1">HOKKAIDO SHOP</div><div class="t2">北海道食材販売</div></div>
+          <svg class="acc-chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="acc-field"><div class="fl">キャッチ</div><div class="fv">北海道の美味しさをご家庭へ</div></div>
+            <div class="acc-field"><div class="fl">内容</div><div class="fv">北海道の厳選食材を全国へお届け。生産者の想いが詰まったこだわりの商品を取り扱っています。</div></div>
+            <div class="acc-field"><div class="fl">商品例</div><div class="fv">海産物 / 野菜 / 加工食品 / 調味料 / 季節限定商品</div></div>
+            <div class="acc-field"><div class="fl">CTA文言</div><div class="fv">ショップを見る</div></div>
+            <div class="acc-field"><div class="fl">CTA先（決定済み）</div><div class="fv done">BASE/STORES等の外部ECへリンク。このサイト内にカート・決済機能は実装しない。</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <h3 style="font-family:var(--serif); font-size:17px; font-weight:700; margin-bottom:14px;">6-3. 選ばれる理由</h3>
+    <div class="simple-table" style="margin-bottom:46px;">
+      <div class="simple-row">
+        <div class="h">実体験をもとにサポート</div>
+        <div class="b">失敗も経験してきたからこそ、初心者の気持ちに寄り添ったサポートができます。</div>
+      </div>
+      <div class="simple-row">
+        <div class="h">一人ひとりに合わせた個別対応</div>
+        <div class="b">それぞれの目標や環境に合わせて、最適な方法をご提案します。</div>
+      </div>
+      <div class="simple-row">
+        <div class="h">ファン作りを重視</div>
+        <div class="b">単なる集客ではなく、長く応援される仕組み作りを大切にしています。</div>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--serif); font-size:17px; font-weight:700; margin-bottom:8px;">6-4. お客様の声</h3>
+    <p class="sec-lead" style="margin-bottom:18px;">現状3件。サービスタグを付けることで、TOPでは全件表示、各サービスページでは該当分のみ表示できます。</p>
+    <div class="simple-table">
+      <div class="simple-row">
+        <div class="h">「副業の第一歩を踏み出せました！」</div>
+        <span class="tagchip">ライバー代理店事業</span>
+      </div>
+      <div class="simple-row">
+        <div class="h">「SNS発信の考え方が大きく変わりました！」</div>
+        <span class="tagchip">オンライン教室コンサル</span>
+      </div>
+      <div class="simple-row">
+        <div class="h">「料理が楽しくなりました！」</div>
+        <span class="tagchip">オンライン料理教室</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 7. 不足情報の確認 ─────────────────────────── -->
+  <section class="block" id="s7">
+    <div class="sec-head">
+      <div class="sec-num">7</div>
+      <h2 class="sec-title">不足情報の確認</h2>
+    </div>
+    <p class="sec-lead">開発にあたって以下の情報が必要です。優先度別にまとめました。</p>
+
+    <div class="pri-group">
+      <div class="pri-label red">🔴 必須 — 実装に不可欠なものです</div>
+      <div class="pri-table">
+        <div class="pri-row"><div class="item">問い合わせ/相談の連絡先URL（LINEまたはフォーム）</div><div class="note">全サービスのCTAボタンのリンク先</div></div>
+        <div class="pri-row"><div class="item">北海道食材ショップのURL（BASE/STORES等）</div><div class="note">北海道食材ページの「ショップを見る」ボタンのリンク先</div></div>
+        <div class="pri-row"><div class="item">ブランドカラー・フォントの指定</div><div class="note">サイト全体のデザイントーン。指定なければこちらで提案</div></div>
+      </div>
+    </div>
+
+    <div class="pri-group">
+      <div class="pri-label amber">🟡 あると質が上がる — なければプレースホルダで対応可</div>
+      <div class="pri-table">
+        <div class="pri-row"><div class="item">プロフィール文（経歴・実績・活動歴）</div><div class="note">プロフィールセクション。「ニッシーです。」のみでは信頼形成が弱い</div></div>
+        <div class="pri-row"><div class="item">プロフィール写真</div><div class="note">プロフィールセクション。個人ブランドが軸なので顔が見えると強い</div></div>
+        <div class="pri-row"><div class="item">各サービスのアイキャッチ画像</div><div class="note">サービスカード・各詳細ページのビジュアル</div></div>
+        <div class="pri-row"><div class="item">お客様の声の詳細（名前・属性・写真等）</div><div class="note">メールのスクショなども可。コメントだけより信頼感が上がる</div></div>
+        <div class="pri-row"><div class="item">料金情報（または「要相談」表記の方針）</div><div class="note">掲載するか、「お問い合わせください」とするか</div></div>
+        <div class="pri-row"><div class="item">SNSアカウントURL</div><div class="note">フッターのSNSリンク</div></div>
+        <div class="pri-row"><div class="item">ロゴデータ</div><div class="note">ヘッダー・OGP（指定なければテキストロゴで対応）</div></div>
+      </div>
+    </div>
+
+    <div class="pri-group">
+      <div class="pri-label green">🟢 追加するかどうか検討</div>
+      <div class="pri-table">
+        <div class="pri-row"><div class="item">FAQ（よくある質問）</div><div class="note">有料サービス系は申込率が上がりやすい。ライバー・コンサルページに付けると効果的</div></div>
+        <div class="pri-row"><div class="item">料理教室の日程・予約ページ</div><div class="note">Zoomで開催しているなら日程が見えると申込みしやすい。Googleカレンダー埋め込みで対応可</div></div>
+      </div>
+    </div>
+
+    <p class="sec-note">※ お知らせ/ブログ機能・予約システム等の有償オプションは「2. お見積り」を参照ください。</p>
+  </section>
+
+  <!-- ── 8. 法的ページの扱い ───────────────────────── -->
+  <section class="block" id="s8">
+    <div class="sec-head">
+      <div class="sec-num">8</div>
+      <h2 class="sec-title">法的ページの扱い</h2>
+    </div>
+    <div class="kv">
+      <div class="kv-row"><div class="k">プライバシーポリシー</div><div class="v">問い合わせフォームで個人情報を取得する場合は必須。テンプレ使用。</div></div>
+      <div class="kv-row"><div class="k">特定商取引法に基づく表示</div><div class="v">北海道食材の販売がBASE/STORESで行われる場合は外部EC側の規定が適用されるため、このサイト側のページは省略できる可能性がある。先方に確認後、要否を決定する。</div></div>
+    </div>
+  </section>
+
+  <!-- ── 9. 開発・引き渡し方針 ─────────────────────── -->
+  <section class="block" id="s9">
+    <div class="sec-head">
+      <div class="sec-num">9</div>
+      <h2 class="sec-title">開発・引き渡し方針</h2>
+    </div>
+    <div class="kv">
+      <div class="kv-row"><div class="k">コンテンツデータ管理</div><div class="v">サービス情報・選ばれる理由・お客様の声は src/data/ 以下の定数ファイルに集約。コードを触らずテキストだけ更新できる構成にする。</div></div>
+      <div class="kv-row"><div class="k">フォーム実装</div><div class="v">自前実装しない。GoogleフォームのiFrame埋め込みかLINEへの外部リンクで完結させる。</div></div>
+      <div class="kv-row"><div class="k">画像最適化</div><div class="v">すべて next/image で最適化する。</div></div>
+      <div class="kv-row"><div class="k">OGP（SNSカード）</div><div class="v">各ページに metadata を設定し、SNSシェア時にサムネイル表示されるようにする。</div></div>
+      <div class="kv-row"><div class="k">引き渡し物</div><div class="v">① GitHubリポジトリ（プライベート）② Vercel デプロイ済みURL ③ README.md（デプロイ手順・コンテンツ更新方法）</div></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="fname">優.bento</div>
+    <div class="fsub">WEBSITE PROPOSAL FOR NISHII — 2026.06.30</div>
+  </footer>
+
+</div>
+
+<script>
+  // progress rail
+  const rail = document.getElementById('rail');
+  function updateRail() {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    rail.style.width = scrolled + '%';
+  }
+  document.addEventListener('scroll', updateRail);
+  updateRail();
+
+  // active nav pill via IntersectionObserver
+  const sections = document.querySelectorAll('section.block');
+  const pills = document.querySelectorAll('.nav-pill');
+  const navScroll = document.getElementById('navScroll');
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        pills.forEach(p => {
+          p.classList.toggle('active', p.dataset.target === id);
+        });
+        const activePill = document.querySelector('.nav-pill.active');
+        if (activePill) {
+          activePill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+
+  sections.forEach(s => obs.observe(s));
+
+  // price toggle
+  document.querySelectorAll('.price-toggle button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.price-toggle button').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      document.querySelectorAll('.price-pane').forEach(p => p.classList.remove('show'));
+      document.getElementById('pane-' + btn.dataset.pane).classList.add('show');
+    });
+  });
+
+  // accordion
+  document.querySelectorAll('.acc-head').forEach(head => {
+    head.addEventListener('click', () => {
+      head.parentElement.classList.toggle('open');
+    });
+  });
+</script>
+
+</body>
+</html>
